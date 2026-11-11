@@ -1,0 +1,77 @@
+# Benchmark Scenario: Web Server Simulation
+# Description: Mix of short-lived (request buffers) and long-lived (session data) allocations
+#              Simulates typical web server memory pattern
+
+# Initialize large heap (typical server)
+init 50000
+
+# Long-lived: Session storage
+alloc SESSION1:2048
+alloc SESSION2:2048
+alloc SESSION3:2048
+
+# Short-lived: Request buffers
+alloc REQ1:512
+alloc REQ2:256
+alloc REQ3:1024
+alloc REQ4:512
+
+# Free completed requests
+free REQ1
+free REQ2
+
+# New requests come in
+alloc REQ5:768
+alloc REQ6:384
+
+free REQ3
+free REQ4
+
+# More sessions
+alloc SESSION4:2048
+alloc SESSION5:2048
+
+# Cache allocations (medium-lived)
+alloc CACHE1:4096
+alloc CACHE2:4096
+alloc CACHE3:4096
+
+# Request burst
+alloc REQ7:512
+alloc REQ8:256
+alloc REQ9:1024
+alloc REQ10:512
+alloc REQ11:256
+alloc REQ12:768
+
+# Clear completed requests
+free REQ5
+free REQ6
+free REQ7
+free REQ8
+free REQ9
+free REQ10
+
+# Session expires
+free SESSION1
+free SESSION2
+
+# New sessions
+alloc SESSION6:2048
+alloc SESSION7:2048
+
+# Cache eviction
+free CACHE1
+
+# New cache
+alloc CACHE4:4096
+
+# More requests
+alloc REQ13:512
+alloc REQ14:1024
+alloc REQ15:256
+
+# Show server memory state
+show detail
+stat
+frag

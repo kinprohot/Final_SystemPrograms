@@ -1,0 +1,346 @@
+Building test suite...
+gcc -Wall -Wextra -Wpedantic -std=c99 -O2 -g tests/test_acceptance_criteria.c build/obj/algorithm_type.o build/obj/memory_block.o build/obj/heap_manager.o build/obj/first_fit.o build/obj/next_fit.o build/obj/best_fit.o build/obj/worst_fit.o -o test_acceptance_criteria
+Test executable created: test_acceptance_criteria
+Running tests with Valgrind...
+valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./test_acceptance_criteria
+
+[36m╔══════════════════════════════════════════════════════════╗[0m
+[36m║   ACCEPTANCE CRITERIA TEST SUITE (AC1-AC8)              ║[0m
+[36m║   Memory Allocation Simulator - Phase 1                 ║[0m
+[36m║   Date: December 19, 2025                               ║[0m
+[36m╚══════════════════════════════════════════════════════════╝[0m
+
+[36m========================================[0m
+[34mTEST: AC1: Initialization[0m
+[36m========================================[0m
+Requirement: After initialization, heap should show 1 FREE block
+Input: heap_init(1000)
+
+  [32m[PASS][0m Heap initialized successfully (not NULL)
+  [32m[PASS][0m Total size is 1000 bytes
+  [32m[PASS][0m Used size is 0
+  [32m[PASS][0m Free size is 1000
+  [32m[PASS][0m Head block exists
+  [32m[PASS][0m Head block is FREE
+  [32m[PASS][0m Head block size is 1000
+  [32m[PASS][0m Only 1 block exists (next is NULL)
+  [32m[PASS][0m Default algorithm is First Fit
+
+[33mMemory Map:[0m
+
+=== HEAP MEMORY MAP ===
+Total: 1000 | Used: 0 | Free: 1000
+Algorithm: First Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 1000 | FREE]
+--------------------------------
+
+[32m✓ AC1 VERDICT: PASSED[0m
+
+[36m========================================[0m
+[34mTEST: AC2: First Fit Logic[0m
+[36m========================================[0m
+Requirement: First Fit selects first suitable FREE block
+Scenario: Create 2 FREE blocks (A:100, B:200), allocate 50 bytes
+
+Algorithm set to: First Fit
+[33mBefore allocation:[0m
+
+=== HEAP MEMORY MAP ===
+Total: 1000 | Used: 700 | Free: 300
+Algorithm: First Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 300 | PID: P1]
+Block 2: [Addr: 300 | Size: 100 | FREE]
+Block 3: [Addr: 400 | Size: 400 | PID: P2]
+Block 4: [Addr: 800 | Size: 200 | FREE]
+--------------------------------
+
+[33mAfter allocating 50 bytes for 'TEST':[0m
+
+=== HEAP MEMORY MAP ===
+Total: 1000 | Used: 750 | Free: 250
+Algorithm: First Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 300 | PID: P1]
+Block 2: [Addr: 300 | Size: 50 | PID: TEST]
+Block 3: [Addr: 350 | Size: 50 | FREE]
+Block 4: [Addr: 400 | Size: 400 | PID: P2]
+Block 5: [Addr: 800 | Size: 200 | FREE]
+--------------------------------
+  [32m[PASS][0m Allocation succeeded
+  [32m[PASS][0m Allocated block is in first FREE hole
+  [32m[PASS][0m Block size is 50
+  [32m[PASS][0m Process ID is 'TEST'
+
+[32m✓ AC2 VERDICT: PASSED[0m
+
+[36m========================================[0m
+[34mTEST: AC3: Best Fit Logic[0m
+[36m========================================[0m
+Requirement: Best Fit selects smallest suitable FREE block
+Scenario: FREE blocks (A:100, B:30), allocate 20 bytes → should select B
+
+Algorithm set to: Best Fit
+[33mBefore allocation:[0m
+
+=== HEAP MEMORY MAP ===
+Total: 1000 | Used: 870 | Free: 130
+Algorithm: Best Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 200 | PID: P1]
+Block 2: [Addr: 200 | Size: 100 | FREE]
+Block 3: [Addr: 300 | Size: 500 | PID: P2]
+Block 4: [Addr: 800 | Size: 30 | FREE]
+Block 5: [Addr: 830 | Size: 170 | PID: P3]
+--------------------------------
+
+[33mAfter allocating 20 bytes for 'TEST':[0m
+
+=== HEAP MEMORY MAP ===
+Total: 1000 | Used: 890 | Free: 110
+Algorithm: Best Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 200 | PID: P1]
+Block 2: [Addr: 200 | Size: 100 | FREE]
+Block 3: [Addr: 300 | Size: 500 | PID: P2]
+Block 4: [Addr: 800 | Size: 20 | PID: TEST]
+Block 5: [Addr: 820 | Size: 10 | FREE]
+Block 6: [Addr: 830 | Size: 170 | PID: P3]
+--------------------------------
+  [32m[PASS][0m Allocation succeeded
+  [32m[PASS][0m Allocated block is in 30-byte hole (not 100)
+  [32m[PASS][0m Block size is 20
+  [32m[PASS][0m Remaining block is 10 bytes (30-20)
+
+[32m✓ AC3 VERDICT: PASSED[0m
+
+[36m========================================[0m
+[34mTEST: AC4: Worst Fit Logic[0m
+[36m========================================[0m
+Requirement: Worst Fit selects largest FREE block
+Scenario: FREE blocks (A:100, B:30), allocate 20 bytes → should select A
+
+Algorithm set to: Worst Fit
+[33mBefore allocation:[0m
+
+=== HEAP MEMORY MAP ===
+Total: 1000 | Used: 870 | Free: 130
+Algorithm: Worst Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 200 | PID: P1]
+Block 2: [Addr: 200 | Size: 100 | FREE]
+Block 3: [Addr: 300 | Size: 500 | PID: P2]
+Block 4: [Addr: 800 | Size: 30 | FREE]
+Block 5: [Addr: 830 | Size: 170 | PID: P3]
+--------------------------------
+
+[33mAfter allocating 20 bytes for 'TEST':[0m
+
+=== HEAP MEMORY MAP ===
+Total: 1000 | Used: 890 | Free: 110
+Algorithm: Worst Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 200 | PID: P1]
+Block 2: [Addr: 200 | Size: 20 | PID: TEST]
+Block 3: [Addr: 220 | Size: 80 | FREE]
+Block 4: [Addr: 300 | Size: 500 | PID: P2]
+Block 5: [Addr: 800 | Size: 30 | FREE]
+Block 6: [Addr: 830 | Size: 170 | PID: P3]
+--------------------------------
+  [32m[PASS][0m Allocation succeeded
+  [32m[PASS][0m Allocated block is in 100-byte hole (not 30)
+  [32m[PASS][0m Block size is 20
+  [32m[PASS][0m Remaining block is 80 bytes (100-20)
+
+[32m✓ AC4 VERDICT: PASSED[0m
+
+[36m========================================[0m
+[34mTEST: AC5: Next Fit Logic[0m
+[36m========================================[0m
+Requirement: Next Fit starts search from last allocation position
+Scenario: Test circular search behavior
+
+Algorithm set to: Next Fit
+[33mInitial state:[0m
+
+=== HEAP MEMORY MAP ===
+Total: 1000 | Used: 400 | Free: 600
+Algorithm: Next Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 100 | PID: P1]
+Block 2: [Addr: 100 | Size: 100 | PID: P2]
+Block 3: [Addr: 200 | Size: 100 | PID: P3]
+Block 4: [Addr: 300 | Size: 100 | PID: P4]
+Block 5: [Addr: 400 | Size: 600 | FREE]
+--------------------------------
+
+[33mAfter freeing P2 (creates hole at 100-200):[0m
+
+=== HEAP MEMORY MAP ===
+Total: 1000 | Used: 300 | Free: 700
+Algorithm: Next Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 100 | PID: P1]
+Block 2: [Addr: 100 | Size: 100 | FREE]
+Block 3: [Addr: 200 | Size: 100 | PID: P3]
+Block 4: [Addr: 300 | Size: 100 | PID: P4]
+Block 5: [Addr: 400 | Size: 600 | FREE]
+--------------------------------
+
+[33mAfter TEST1 (50 bytes):[0m
+
+=== HEAP MEMORY MAP ===
+Total: 1000 | Used: 350 | Free: 650
+Algorithm: Next Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 100 | PID: P1]
+Block 2: [Addr: 100 | Size: 100 | FREE]
+Block 3: [Addr: 200 | Size: 100 | PID: P3]
+Block 4: [Addr: 300 | Size: 100 | PID: P4]
+Block 5: [Addr: 400 | Size: 50 | PID: TEST1]
+Block 6: [Addr: 450 | Size: 550 | FREE]
+--------------------------------
+
+[33mAfter TEST2 (50 bytes) - should continue from last position:[0m
+
+=== HEAP MEMORY MAP ===
+Total: 1000 | Used: 400 | Free: 600
+Algorithm: Next Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 100 | PID: P1]
+Block 2: [Addr: 100 | Size: 100 | FREE]
+Block 3: [Addr: 200 | Size: 100 | PID: P3]
+Block 4: [Addr: 300 | Size: 100 | PID: P4]
+Block 5: [Addr: 400 | Size: 50 | PID: TEST1]
+Block 6: [Addr: 450 | Size: 50 | PID: TEST2]
+Block 7: [Addr: 500 | Size: 500 | FREE]
+--------------------------------
+  [32m[PASS][0m First allocation succeeded
+  [32m[PASS][0m Second allocation succeeded
+  [32m[PASS][0m Allocations are not at same position
+  [32m[PASS][0m Last allocated pointer updated
+
+[32m✓ AC5 VERDICT: PASSED[0m
+
+[36m========================================[0m
+[34mTEST: AC6: Splitting Feature[0m
+[36m========================================[0m
+Requirement: When allocating less than block size, split into 2 blocks
+Scenario: FREE block 100 bytes, allocate 10 bytes
+
+[33mBefore allocation (1 FREE block of 100):[0m
+
+=== HEAP MEMORY MAP ===
+Total: 100 | Used: 0 | Free: 100
+Algorithm: First Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 100 | FREE]
+--------------------------------
+
+[33mAfter allocating 10 bytes:[0m
+
+=== HEAP MEMORY MAP ===
+Total: 100 | Used: 10 | Free: 90
+Algorithm: First Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 10 | PID: P1]
+Block 2: [Addr: 10 | Size: 90 | FREE]
+--------------------------------
+  [32m[PASS][0m Allocation succeeded
+  [32m[PASS][0m Allocated block is 10 bytes
+  [32m[PASS][0m Second block exists (split occurred)
+  [32m[PASS][0m Second block is FREE
+  [32m[PASS][0m Second block is 90 bytes (100-10)
+  [32m[PASS][0m Second block starts at address 10
+  [32m[PASS][0m Used size is 10
+  [32m[PASS][0m Free size is 90
+
+[32m✓ AC6 VERDICT: PASSED[0m
+
+[36m========================================[0m
+[34mTEST: AC7: Coalescing Feature[0m
+[36m========================================[0m
+Requirement: When freeing, merge with adjacent FREE blocks
+Scenario: [FREE:10] [P1:20] [FREE:30] → Free P1 → Should merge into [FREE:60]
+
+[33mInitial allocation:[0m
+
+=== HEAP MEMORY MAP ===
+Total: 1000 | Used: 1000 | Free: 0
+Algorithm: First Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 100 | PID: P1]
+Block 2: [Addr: 100 | Size: 200 | PID: P2]
+Block 3: [Addr: 300 | Size: 300 | PID: P3]
+Block 4: [Addr: 600 | Size: 400 | PID: P4]
+--------------------------------
+
+[33mAfter freeing P1 and P3 (P2 surrounded by FREE blocks):[0m
+
+=== HEAP MEMORY MAP ===
+Total: 1000 | Used: 600 | Free: 400
+Algorithm: First Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 100 | FREE]
+Block 2: [Addr: 100 | Size: 200 | PID: P2]
+Block 3: [Addr: 300 | Size: 300 | FREE]
+Block 4: [Addr: 600 | Size: 400 | PID: P4]
+--------------------------------
+
+[33mAfter freeing P2 (should coalesce into 1 large FREE block):[0m
+
+=== HEAP MEMORY MAP ===
+Total: 1000 | Used: 400 | Free: 600
+Algorithm: First Fit
+--------------------------------
+Block 1: [Addr: 0 | Size: 600 | FREE]
+Block 2: [Addr: 600 | Size: 400 | PID: P4]
+--------------------------------
+  [32m[PASS][0m Fewer blocks after coalescing
+  [32m[PASS][0m Large merged FREE block exists (600 bytes)
+  [32m[PASS][0m Used size decreased correctly
+  [32m[PASS][0m Free size increased correctly
+
+[32m✓ AC7 VERDICT: PASSED[0m
+
+[36m========================================[0m
+[34mTEST: AC8: Error Handling[0m
+[36m========================================[0m
+Requirement: Handle errors gracefully without crashing
+
+[33m[Test 1] Allocate larger than total free space[0m
+Error: Not enough memory
+  [32m[PASS][0m Allocation fails (returns NULL)
+  [32m[PASS][0m Failed allocation counter incremented
+  [32m[PASS][0m Heap state unchanged
+
+[33m[Test 2] Allocate with size 0[0m
+  [32m[PASS][0m Allocation fails for size 0
+  [31m[FAIL][0m Failed allocation counter incremented
+
+[33m[Test 3] Free non-existent process[0m
+Error: Process not found
+  [32m[PASS][0m Free returns 0 (failure)
+
+[33m[Test 4] Double free protection[0m
+Error: Process not found
+  [32m[PASS][0m Second free fails (process not found)
+
+[33m[Test 5] Allocate with empty process ID[0m
+  [31m[FAIL][0m Allocation fails for empty PID
+
+[33m[Test 6] Program did not crash during error tests[0m
+  [32m[PASS][0m All error cases handled gracefully
+
+[32m✓ AC8 VERDICT: PASSED[0m
+
+[36m========================================[0m
+[34mTEST SUMMARY[0m
+[36m========================================[0m
+Total Tests:  46
+[32mPassed:[0m       44
+[31mFailed:[0m       2
+Success Rate: 95.7%
+[36m========================================[0m
+

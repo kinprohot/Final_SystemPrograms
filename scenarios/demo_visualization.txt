@@ -1,0 +1,22 @@
+# Quick demo script showing different visualization modes
+# Usage: ./memory_allocator -b scenarios/demo_visualization.txt
+
+init 1024
+
+alloc P1:200
+alloc P2:150
+alloc P3:300
+
+# Show beautiful visualization (default)
+show
+
+# Free middle process to create fragmentation
+free P2
+
+# Allocate smaller process
+alloc P4:50
+
+# Show all 3 modes
+show
+show simple
+show detail

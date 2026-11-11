@@ -1,0 +1,31 @@
+hungl@MSI:/mnt/e/LTHT_project$ echo "$(make --version)" >> verify/gcc_version.txt
+hungl@MSI:/mnt/e/LTHT_project$ git config --global core.autocrlf input
+hungl@MSI:/mnt/e/LTHT_project$ git config --global --get core.autocrlf
+input
+hungl@MSI:/mnt/e/LTHT_project$ cat ~/.gitconfig
+[core]
+        autocrlf = input
+hungl@MSI:/mnt/e/LTHT_project$ cat ~/.gitconfig > verify/gitconfig.txt
+hungl@MSI:/mnt/e/LTHT_project$ git init
+Initialized empty Git repository in /mnt/e/LTHT_project/.git/
+
+cat > .gitattributes << 'EOF'
+* text=auto eol=lf
+EOF
+
+touch .gitignore
+
+hungl@MSI:/mnt/e/LTHT_project$ mkdir -p .vscode
+hungl@MSI:/mnt/e/LTHT_project$ cat > .vscode/settings.json << 'EOF'
+> {
+>     "files.eol": "\n"
+> }
+> EOF
+hungl@MSI:/mnt/e/LTHT_project$ ls -a
+.  ..  docs  .git  .gitattributes  .gitignore  verify  .vscode
+hungl@MSI:/mnt/e/LTHT_project$ git check-attr eol -- *
+docs: eol: lf
+
+hungl@MSI:/mnt/e/LTHT_project$ sudo apt install valgrind
+[sudo] password for hungl: 
+*done*

@@ -1,0 +1,89 @@
+# =============================================================================
+# Memory Allocator Simulator - .gitignore
+# =============================================================================
+
+# Compiled object files & libraries
+*.o
+*.obj
+*.lo
+*.slo
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+*.lib
+
+# Compiled binaries & executables
+memory_allocator
+memory_allocator.exe
+*.exe
+*.out
+a.out
+
+# Build directories
+build/
+bin/
+obj/
+dist/
+.deps/
+
+# Debugging & profiling symbols
+*.dSYM/
+*.su
+*.idb
+*.pdb
+core
+core.*
+vgcore.*
+valgrind-out.txt
+*.valgrind
+*.gcno
+*.gcda
+*.gcov
+
+# Test outputs & temporary files
+test_output/
+test_results.txt
+*.tmp
+*.temp
+*.log
+*.swp
+*.swo
+*~
+.*.swp
+.*.swo
+scenarios/output/
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE & Editor specific files
+.vscode/
+!.vscode/settings.json
+.idea/
+*.code-workspace
+*.sublime-project
+*.sublime-workspace
+
+# Runtime export files (allow benchmark reference files)
+state*.json
+snapshot*.json
+test*.json
+output*.json
+*.html
+!web/index.html
+!benchmark_*.json
+
+# Verification logs
+verify/phase2_test.txt
+verify/PR2_REVIEW.md
+verify/tests.txt
+test_phase3.ps1

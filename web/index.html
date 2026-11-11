@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>MemoryOS - Memory Allocation Simulator (iOS Theme)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&family=SF+Pro+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Apple iOS 18 Design Tokens (Light Mode default) */
+      --ios-bg: #F2F2F7;
+      --ios-card: #FFFFFF;
+      --ios-card-secondary: #F8F8F9;
+      --ios-surface-tertiary: #E5E5EA;
+      --ios-text-primary: #000000;
+      --ios-text-secondary: #8E8E93;
+      --ios-text-tertiary: #C7C7CC;
+      --ios-separator: rgba(60, 60, 67, 0.12);
+      --ios-fill: rgba(120, 120, 128, 0.16);
+      --ios-fill-tertiary: rgba(118, 118, 128, 0.12);
+      
+      /* Apple HIG System Accents */
+      --apple-blue: #007AFF;
+      --apple-green: #34C759;
+      --apple-indigo: #5856D6;
+      --apple-orange: #FF9500;
+      --apple-pink: #FF2D55;
+      --apple-purple: #AF52DE;
+      --apple-red: #FF3B30;
+      --apple-teal: #30B0C7;
+      --apple-yellow: #FFCC00;
+      --apple-gray: #8E8E93;
+
+      /* Device dimensions & springs */
+      --spring-bounce: cubic-bezier(0.32, 0.72, 0, 1);
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --radius-full: 9999px;
+      
+      /* Shadows */
+      --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+      --shadow-sheet: 0 12px 40px rgba(0, 0, 0, 0.15);
+      --shadow-device: 0 25px 60px -15px rgba(0, 0, 0, 0.25), 0 0 0 12px #1c1c1e, 0 0 0 14px #2c2c2e;
+    }
+
+    [data-theme="dark"] {
+      --ios-bg: #000000;
+      --ios-card: #1C1C1E;
+      --ios-card-secondary: #2C2C2E;
+      --ios-surface-tertiary: #3A3A3C;
+      --ios-text-primary: #FFFFFF;
+      --ios-text-secondary: #8E8E93;
+      --ios-text-tertiary: #48484A;
+      --ios-separator: rgba(84, 84, 88, 0.36);
+      --ios-fill: rgba(120, 120, 128, 0.32);
+      --ios-fill-tertiary: rgba(118, 118, 128, 0.24);
+      --shadow-device: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 12px #2c2c2e, 0 0 0 14px #3a3a3c;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+      background: var(--ios-bg);
+      color: var(--ios-text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background-color 0.3s var(--spring-bounce);
+      overflow-x: hidden;
+      padding-bottom: 40px;
+    }
+
+    /* Top Studio Bar */
+    .studio-header {
+      width: 100%;
+      max-width: 1300px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      z-index: 50;
+    }
+
+    .studio-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #007AFF, #5856D6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    }
+
+    .brand-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: #FFFFFF;
+    }
+
+    .brand-text h1 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ios-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(0, 122, 255, 0.12);
+      color: var(--apple-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-text p {
+      font-size: 13px;
+      color: var(--ios-text-secondary);
+    }
+
+    .studio-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mode-pill-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius-full);
+      background: var(--ios-card);
+      border: 1px solid var(--ios-separator);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ios-text-primary);
+      cursor: pointer;
+      box-shadow: var(--shadow-subtle);
+      transition: all 0.2s var(--spring-bounce);
+    }
+
+    .mode-pill-btn:hover {
+      transform: scale(1.03);
+    }
+
+    .mode-pill-btn:active {
+      transform: scale(0.97);
+    }
+
+    .mode-pill-btn.active {
+      background: var(--apple-blue);
+      color: #FFFFFF;
+      border-color: var(--apple-blue);
+    }
+
+    /* Main Container */
+    .app-viewport {
+      width: 100%;
+      max-width: 1240px;
+      display: flex;
+      justify-content: center;
+      padding: 10px 20px;
+      gap: 30px;
+    }
+
+    /* iPhone Frame Mockup Mode */
+    .device-wrapper {
+      position: relative;
+      width: 395px;
+      min-height: 844px;
+      background: var(--ios-bg);
+      border-radius: 54px;
+      overflow: hidden;
+      box-shadow: var(--shadow-device);
+      display: flex;
+      flex-direction: column;
+      border: 4px solid #333336;
+      transition: all 0.4s var(--spring-bounce);
+    }
+
+    /* Studio / Expanded Mode */
+    .app-viewport.expanded .device-wrapper {
+      width: 100%;
+      max-width: 1100px;
+      min-height: auto;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--ios-separator);
+      box-shadow: var(--shadow-card);
+    }
+
+    /* iPhone Status Bar */
+    .ios-status-bar {
+      height: 48px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 40;
+      position: relative;
+    }
+
+    .app-viewport.expanded .ios-status-bar {
+      display: none;
+    }
+
+    .status-time {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-icons svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* Dynamic Island */
+    .dynamic-island-container {
+      position: absolute;
+      top: 11px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 45;
+    }
+
+    .app-viewport.expanded .dynamic-island-container {
+      position: static;
+      transform: none;
+      margin: 12px auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    .dynamic-island {
+      background: #000000;
+      color: #FFFFFF;
+      min-width: 120px;
+      height: 35px;
+      border-radius: 20px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      transition: all 0.35s var(--spring-bounce);
+    }
+
+    .dynamic-island.expanded {
+      min-width: 320px;
+      height: 60px;
+      padding: 10px 18px;
+      border-radius: 30px;
+    }
+
+    .di-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .di-pill-badge {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--apple-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+
+    .di-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--apple-teal);
+    }
+
+    .di-waveform {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .di-wave-bar {
+      width: 3px;
+      height: 8px;
+      background: var(--apple-green);
+      border-radius: 2px;
+      animation: pulseWave 1.2s infinite ease-in-out alternate;
+    }
+    .di-wave-bar:nth-child(2) { animation-delay: 0.2s; height: 14px; }
+    .di-wave-bar:nth-child(3) { animation-delay: 0.4s; height: 10px; }
+
+    @keyframes pulseWave {
+      0% { transform: scaleY(0.4); opacity: 0.6; }
+      100% { transform: scaleY(1.2); opacity: 1; }
+    }
+
+    /* Device Content Scroll Area */
+    .ios-scroll-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 18px 80px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      scrollbar-width: thin;
+    }
+
+    .app-viewport.expanded .ios-scroll-content {
+      padding: 24px 32px 40px 32px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+    }
+
+    /* iOS Inset Group Container */
+    .ios-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ios-section-header {
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: var(--ios-text-secondary);
+      padding-left: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ios-card {
+      background: var(--ios-card);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-subtle);
+      border: 1px solid var(--ios-separator);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: background-color 0.3s;
+    }
+
+    /* iPhone Storage Bar (Main Star Component) */
+    .storage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .storage-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ios-text-secondary);
+    }
+
+    .storage-value {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .storage-value small {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ios-text-secondary);
+    }
+
+    .iphone-storage-track {
+      width: 100%;
+      height: 28px;
+      border-radius: 9px;
+      background: var(--ios-surface-tertiary);
+      overflow: hidden;
+      display: flex;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
+      position: relative;
+    }
+
+    .storage-segment {
+      height: 100%;
+      transition: width 0.4s var(--spring-bounce);
+      position: relative;
+      cursor: pointer;
+      min-width: 2px;
+    }
+
+    .storage-segment:hover {
+      filter: brightness(1.15);
+      z-index: 5;
+    }
+
+    .storage-segment.free-block {
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(142, 142, 147, 0.18),
+        rgba(142, 142, 147, 0.18) 6px,
+        rgba(142, 142, 147, 0.3) 6px,
+        rgba(142, 142, 147, 0.3) 12px
+      );
+    }
+
+    /* Legend & Categories */
+    .storage-legend-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 16px;
+      padding-top: 4px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ios-text-primary);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
+    /* Cupertino Segmented Control */
+    .segmented-control {
+      background: var(--ios-fill-tertiary);
+      border-radius: 10px;
+      padding: 3px;
+      display: flex;
+      position: relative;
+      gap: 2px;
+    }
+
+    .segment-tab {
+      flex: 1;
+      padding: 8px 4px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ios-text-primary);
+      border-radius: 8px;
+      cursor: pointer;
+      position: relative;
+      z-index: 2;
+      transition: all 0.25s var(--spring-bounce);
+      border: none;
+      background: transparent;
+    }
+
+    .segment-tab.active {
+      background: var(--ios-card);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      color: var(--ios-text-primary);
+    }
+
+    [data-theme="dark"] .segment-tab.active {
+      background: #636366;
+    }
+
+    /* Inset Row Items */
+    .ios-cell {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 0.5px solid var(--ios-separator);
+    }
+
+    .ios-cell:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .ios-cell:first-child {
+      padding-top: 0;
+    }
+
+    .cell-label {
+      font-size: 15px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cell-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+    }
+
+    .cell-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .cell-value {
+      font-size: 15px;
+      color: var(--ios-text-secondary);
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    /* iOS Form Inputs */
+    .ios-input-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .ios-input {
+      flex: 1;
+      background: var(--ios-surface-tertiary);
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--ios-text-primary);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .ios-input:focus {
+      border-color: var(--apple-blue);
+      background: var(--ios-card);
+    }
+
+    /* iOS Action Buttons */
+    .ios-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s var(--spring-bounce);
+    }
+
+    .ios-btn:active {
+      transform: scale(0.96);
+      filter: brightness(0.9);
+    }
+
+    .btn-primary {
+      background: var(--apple-blue);
+      color: #FFFFFF;
+    }
+
+    .btn-secondary {
+      background: var(--ios-fill);
+      color: var(--apple-blue);
+    }
+
+    .btn-destructive {
+      background: rgba(255, 59, 48, 0.12);
+      color: var(--apple-red);
+    }
+
+    .btn-icon-only {
+      padding: 8px;
+      border-radius: 50%;
+      background: var(--ios-fill);
+      color: var(--apple-blue);
+    }
+
+    /* Quick Preset Chips */
+    .preset-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip-btn {
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      background: var(--ios-fill-tertiary);
+      border: 1px solid var(--ios-separator);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ios-text-primary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .chip-btn:hover {
+      background: var(--apple-blue);
+      color: #FFFFFF;
+      border-color: var(--apple-blue);
+    }
+
+    /* Health/Activity Ring Dashboard */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .metric-card {
+      background: var(--ios-card);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      border: 1px solid var(--ios-separator);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .metric-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ios-text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .metric-number {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    .metric-subtitle {
+      font-size: 11px;
+      color: var(--ios-text-secondary);
+    }
+
+    /* Memory Block Detailed List */
+    .block-list {
+      max-height: 240px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 4px;
+    }
+
+    .block-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: var(--ios-card-secondary);
+      font-size: 13px;
+      transition: background 0.2s;
+    }
+
+    .block-item:hover {
+      background: var(--ios-surface-tertiary);
+    }
+
+    .block-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .block-tag {
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+
+    .block-range {
+      font-family: "JetBrains Mono", monospace;
+      color: var(--ios-text-secondary);
+      font-size: 12px;
+    }
+
+    .block-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-delete-block {
+      background: transparent;
+      border: none;
+      color: var(--apple-red);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    .btn-delete-block:hover {
+      background: rgba(255, 59, 48, 0.15);
+    }
+
+    /* iPhone Bottom Home Bar */
+    .ios-home-indicator {
+      width: 134px;
+      height: 5px;
+      background: var(--ios-text-primary);
+      opacity: 0.3;
+      border-radius: 100px;
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+    }
+
+    .app-viewport.expanded .ios-home-indicator {
+      display: none;
+    }
+
+    /* Benchmark Compare View (Modal or Inset) */
+    .benchmark-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .benchmark-table th {
+      text-align: left;
+      padding: 8px 6px;
+      color: var(--ios-text-secondary);
+      border-bottom: 1px solid var(--ios-separator);
+      font-weight: 600;
+    }
+
+    .benchmark-table td {
+      padding: 8px 6px;
+      border-bottom: 0.5px solid var(--ios-separator);
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    .badge-trophy {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(255, 204, 0, 0.15);
+      color: #D48800;
+    }
+
+    /* Toast Tooltip for Storage Bar */
+    .ios-callout-popover {
+      position: fixed;
+      background: rgba(0, 0, 0, 0.88);
+      color: #FFFFFF;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      pointer-events: none;
+      z-index: 100;
+      transform: translate(-50%, -120%);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      display: none;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .app-viewport {
+        padding: 0;
+      }
+      .device-wrapper {
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+      }
+      .studio-header {
+        padding: 12px 16px;
+      }
+      .brand-text h1 {
+        font-size: 17px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Studio Navigation Bar -->
+  <header class="studio-header">
+    <div class="studio-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6zm3 2v8h2V8H7zm4 0v8h2V8h-2zm4 0v4h2V8h-2z"/></svg>
+      </div>
+      <div class="brand-text">
+        <h1>MemoryOS <span class="ios-badge">iOS 18 Theme</span></h1>
+        <p>Memory Allocation Algorithms Simulator</p>
+      </div>
+    </div>
+
+    <div class="studio-controls">
+      <button class="mode-pill-btn active" id="btn-device-toggle" title="Chuyển đổi giao diện iPhone và Desktop">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+        <span>iPhone View</span>
+      </button>
+
+      <button class="mode-pill-btn" id="btn-theme-toggle" title="Đổi giao diện Sáng / Tối">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+        <span id="theme-label">Dark</span>
+      </button>
+
+      <button class="mode-pill-btn" id="btn-sound-toggle" title="Bật/Tắt âm thanh Haptic">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        <span id="sound-label">Haptic ON</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Viewport Container -->
+  <main class="app-viewport" id="app-viewport">
+    <div class="device-wrapper" id="device-wrapper">
+      
+      <!-- iOS Status Bar (iPhone Mode) -->
+      <div class="ios-status-bar">
+        <div class="status-time" id="status-time">9:41</div>
+        <div class="status-icons">
+          <!-- Cellular -->
+          <svg viewBox="0 0 24 24"><path d="M2 17h3v4H2v-4zm6-5h3v9H8v-9zm6-6h3v15h-3V6zm6-4h3v19h-3V2z"/></svg>
+          <!-- Wifi -->
+          <svg viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0 0 12 4zm0 4c3.31 0 6.32 1.34 8.5 3.51L12 19.82 3.5 11.51C5.68 9.34 8.69 8 12 8z"/></svg>
+          <!-- Battery -->
+          <svg viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+        </div>
+      </div>
+
+      <!-- Dynamic Island with Interactive Notification -->
+      <div class="dynamic-island-container">
+        <div class="dynamic-island" id="dynamic-island">
+          <div class="di-left">
+            <div class="di-pill-badge" id="di-badge">✓</div>
+            <span id="di-text">Heap Ready (1024 KB)</span>
+          </div>
+          <div class="di-right">
+            <div class="di-waveform">
+              <div class="di-wave-bar"></div>
+              <div class="di-wave-bar"></div>
+              <div class="di-wave-bar"></div>
+            </div>
+            <span id="di-algo">FF</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Scrollable Content -->
+      <div class="ios-scroll-content">
+        
+        <!-- Left / Primary Column -->
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+
+          <!-- iPhone Storage Memory Visualization Card -->
+          <section class="ios-section">
+            <div class="ios-section-header">
+              <span>iPhone Memory Heap</span>
+              <span id="lbl-utilization" style="color: var(--apple-blue); font-weight: 600;">0% Used</span>
+            </div>
+
+            <div class="ios-card">
+              <div class="storage-header">
+                <div>
+                  <div class="storage-title">Heap Space</div>
+                  <div class="storage-value" id="disp-total-usage">0 <small id="disp-total-cap">/ 1024 KB</small></div>
+                </div>
+                <div style="text-align: right;">
+                  <div class="storage-title">Free Space</div>
+                  <div style="font-size: 17px; font-weight: 600; color: var(--apple-green);" id="disp-free-cap">1024 KB</div>
+                </div>
+              </div>
+
+              <!-- Storage Bar Track -->
+              <div class="iphone-storage-track" id="storage-track">
+                <!-- Dynamically populated memory block segments -->
+              </div>
+
+              <!-- Legend -->
+              <div class="storage-legend-grid" id="storage-legend">
+                <!-- Dynamically populated legend items -->
+              </div>
+            </div>
+          </section>
+
+          <!-- Cupertino Segmented Control (Algorithm Selection) -->
+          <section class="ios-section">
+            <div class="ios-section-header">
+              <span>Allocation Strategy</span>
+              <span id="algo-rule-hint" style="text-transform: none; font-size: 11px;">Find first fit</span>
+            </div>
+
+            <div class="segmented-control" id="algo-segmented-control">
+              <button class="segment-tab active" data-algo="first-fit">First Fit</button>
+              <button class="segment-tab" data-algo="next-fit">Next Fit</button>
+              <button class="segment-tab" data-algo="best-fit">Best Fit</button>
+              <button class="segment-tab" data-algo="worst-fit">Worst Fit</button>
+            </div>
+          </section>
+
+          <!-- iOS Grouped Form: Allocate & Free -->
+          <section class="ios-section">
+            <div class="ios-section-header">
+              <span>Memory Operations</span>
+            </div>
+
+            <div class="ios-card">
+              <div class="ios-input-group">
+                <input type="text" class="ios-input" id="input-pid" placeholder="Process ID (vd: P1)" value="P1" maxlength="10">
+                <input type="number" class="ios-input" id="input-size" placeholder="Size (KB)" value="128" min="1" max="8192">
+                <button class="ios-btn btn-primary" id="btn-allocate">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                  <span>Alloc</span>
+                </button>
+              </div>
+
+              <div class="preset-chips">
+                <span style="font-size: 11px; color: var(--ios-text-secondary); align-self: center;">Quick:</span>
+                <button class="chip-btn" onclick="quickAlloc(64)">+64 KB</button>
+                <button class="chip-btn" onclick="quickAlloc(128)">+128 KB</button>
+                <button class="chip-btn" onclick="quickAlloc(256)">+256 KB</button>
+                <button class="chip-btn" onclick="quickAlloc(512)">+512 KB</button>
+              </div>
+
+              <div style="display: flex; gap: 8px; margin-top: 4px;">
+                <button class="ios-btn btn-secondary" style="flex: 1;" id="btn-free-selected">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                  <span>Free PID</span>
+                </button>
+                <button class="ios-btn btn-destructive" id="btn-reset-heap">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                  <span>Reset</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Interactive Simulation Scenarios -->
+          <section class="ios-section">
+            <div class="ios-section-header">
+              <span>Automated Scenarios</span>
+              <span id="sim-status-label" style="color: var(--apple-green);">Idle</span>
+            </div>
+
+            <div class="ios-card">
+              <div style="display: flex; gap: 8px;">
+                <button class="ios-btn btn-secondary" style="flex: 1;" onclick="loadScenario('random')">
+                  🎲 Random Mix
+                </button>
+                <button class="ios-btn btn-secondary" style="flex: 1;" onclick="loadScenario('worst')">
+                  ⚡ Worst-Case
+                </button>
+                <button class="ios-btn btn-secondary" style="flex: 1;" onclick="loadScenario('web')">
+                  🌐 Web Server
+                </button>
+              </div>
+
+              <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 6px;">
+                <div style="display: flex; gap: 8px;">
+                  <button class="ios-btn btn-primary" id="btn-play-pause" onclick="toggleAutoPlay()">
+                    <span id="play-btn-text">▶ Auto Play</span>
+                  </button>
+                  <button class="ios-btn btn-secondary" onclick="stepScenario()">
+                    ⏭ Step
+                  </button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ios-text-secondary);">
+                  <span>Speed:</span>
+                  <input type="range" id="speed-slider" min="50" max="600" value="250" style="accent-color: var(--apple-blue); width: 80px;">
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Right / Secondary Column (Diagnostics, Activity Rings, Benchmark) -->
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+
+          <!-- iOS Activity Diagnostics -->
+          <section class="ios-section">
+            <div class="ios-section-header">
+              <span>System Diagnostics</span>
+              <span style="font-size: 11px; color: var(--ios-text-secondary);">Real-time</span>
+            </div>
+
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <div class="metric-title">
+                  <span>Fragmentation</span>
+                  <span style="color: var(--apple-purple);">●</span>
+                </div>
+                <div class="metric-number" id="diag-frag">0.0%</div>
+                <div class="metric-subtitle" id="diag-frag-severity">Optimal (Low)</div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-title">
+                  <span>Success Rate</span>
+                  <span style="color: var(--apple-green);">●</span>
+                </div>
+                <div class="metric-number" id="diag-success">100%</div>
+                <div class="metric-subtitle" id="diag-alloc-ratio">0/0 allocs</div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-title">
+                  <span>Largest Free</span>
+                  <span style="color: var(--apple-blue);">●</span>
+                </div>
+                <div class="metric-number" id="diag-largest-free">1024</div>
+                <div class="metric-subtitle">KB continuous</div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-title">
+                  <span>Total Blocks</span>
+                  <span style="color: var(--apple-orange);">●</span>
+                </div>
+                <div class="metric-number" id="diag-block-count">1</div>
+                <div class="metric-subtitle" id="diag-block-split">0 used, 1 free</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Active Blocks Inset Table -->
+          <section class="ios-section">
+            <div class="ios-section-header">
+              <span>Memory Blocks (Doubly-Linked List)</span>
+              <span id="lbl-block-summary" style="font-size: 11px;">1 Node</span>
+            </div>
+
+            <div class="ios-card" style="padding: 10px;">
+              <div class="block-list" id="block-list-container">
+                <!-- Dynamically rendered list of blocks -->
+              </div>
+            </div>
+          </section>
+
+          <!-- Benchmark Comparison Hub (Phase 3 Results) -->
+          <section class="ios-section">
+            <div class="ios-section-header">
+              <span>Phase 3 Benchmark Comparison</span>
+              <span class="badge-trophy">🏆 Best Fit Wins</span>
+            </div>
+
+            <div class="ios-card">
+              <table class="benchmark-table">
+                <thead>
+                  <tr>
+                    <th>Algorithm</th>
+                    <th>Success</th>
+                    <th>Speed</th>
+                    <th>Frag %</th>
+                  </tr>
+                </thead>
+                <tbody id="benchmark-tbody">
+                  <tr>
+                    <td><strong>First Fit</strong></td>
+                    <td>71.59%</td>
+                    <td>0.00015 ms</td>
+                    <td>85.4%</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Next Fit</strong></td>
+                    <td>71.43%</td>
+                    <td><span class="badge-trophy">0.00009 ms ⚡</span></td>
+                    <td>83.3%</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Best Fit</strong></td>
+                    <td><span class="badge-trophy">72.74% 🏆</span></td>
+                    <td>0.00039 ms</td>
+                    <td>81.2%</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Worst Fit</strong></td>
+                    <td>68.90%</td>
+                    <td>0.00042 ms</td>
+                    <td>88.7%</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div style="display: flex; gap: 8px; margin-top: 6px;">
+                <button class="ios-btn btn-secondary" style="flex: 1; font-size: 13px;" onclick="exportStateJSON()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                  <span>Export JSON</span>
+                </button>
+                <button class="ios-btn btn-secondary" style="flex: 1; font-size: 13px;" onclick="importStateJSON()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
+                  <span>Import JSON</span>
+                </button>
+                <input type="file" id="json-file-input" style="display: none;" accept=".json">
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+      </div>
+
+      <!-- iPhone Home Indicator -->
+      <div class="ios-home-indicator"></div>
+
+    </div>
+  </main>
+
+  <!-- Interactive Callout Popover -->
+  <div class="ios-callout-popover" id="callout-popover"></div>
+
+  <!-- Audio Synthesis & Core Simulation Script -->
+  <script>
+    /* ==========================================================
+       1. APPLE HAPTIC AUDIO SYNTHESIZER (Web Audio API)
+       ========================================================== */
+    class AppleHaptics {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+      playTap() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(320, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.04);
+      }
+      playSuccess() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(580, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.09);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.09);
+      }
+      playWarning() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.15);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.15);
+      }
+    }
+    const haptics = new AppleHaptics();
+
+    /* ==========================================================
+       2. HEAP MANAGER CORE ENGINE (Mirroring C Implementation)
+       ========================================================== */
+    const APPLE_PROCESS_PALETTE = [
+      '#007AFF', // System Blue
+      '#5856D6', // System Indigo
+      '#AF52DE', // System Purple
+      '#FF2D55', // System Pink
+      '#FF9500', // System Orange
+      '#30B0C7', // System Teal
+      '#FFCC00', // System Yellow
+      '#34C759', // System Green
+      '#5AC8FA'  // System Sky
+    ];
+
+    class MemoryBlock {
+      constructor(start, size, isFree = true, pid = null) {
+        this.start = start;
+        this.size = size;
+        this.isFree = isFree;
+        this.pid = pid;
+        this.color = isFree ? null : APPLE_PROCESS_PALETTE[Math.abs(hashCode(pid || '')) % APPLE_PROCESS_PALETTE.length];
+      }
+    }
+
+    function hashCode(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+      }
+      return hash;
+    }
+
+    class HeapManager {
+      constructor(totalSize = 1024) {
+        this.totalSize = totalSize;
+        this.blocks = [new MemoryBlock(0, totalSize, true, null)];
+        this.algorithm = 'first-fit';
+        this.lastAllocatedIndex = 0; // For Next Fit
+        this.allocationCount = 0;
+        this.failedAllocationCount = 0;
+        this.deallocationCount = 0;
+      }
+
+      reset(newTotalSize = null) {
+        if (newTotalSize) this.totalSize = newTotalSize;
+        this.blocks = [new MemoryBlock(0, this.totalSize, true, null)];
+        this.lastAllocatedIndex = 0;
+        this.allocationCount = 0;
+        this.failedAllocationCount = 0;
+        this.deallocationCount = 0;
+      }
+
+      getUsedSize() {
+        return this.blocks.filter(b => !b.isFree).reduce((acc, b) => acc + b.size, 0);
+      }
+
+      getFreeSize() {
+        return this.totalSize - this.getUsedSize();
+      }
+
+      getLargestFreeBlock() {
+        const freeBlocks = this.blocks.filter(b => b.isFree);
+        return freeBlocks.length ? Math.max(...freeBlocks.map(b => b.size)) : 0;
+      }
+
+      getFragmentation() {
+        const freeSize = this.getFreeSize();
+        if (freeSize <= 0) return 0;
+        const largest = this.getLargestFreeBlock();
+        return ((freeSize - largest) / freeSize) * 100;
+      }
+
+      /* 4 Core Allocation Algorithms */
+      findBlock(size) {
+        if (this.algorithm === 'first-fit') {
+          return this.blocks.findIndex(b => b.isFree && b.size >= size);
+        } else if (this.algorithm === 'next-fit') {
+          const n = this.blocks.length;
+          let idx = this.lastAllocatedIndex;
+          for (let i = 0; i < n; i++) {
+            const currentIdx = (idx + i) % n;
+            const b = this.blocks[currentIdx];
+            if (b.isFree && b.size >= size) {
+              return currentIdx;
+            }
+          }
+          return -1;
+        } else if (this.algorithm === 'best-fit') {
+          let bestIdx = -1;
+          let minDiff = Infinity;
+          this.blocks.forEach((b, i) => {
+            if (b.isFree && b.size >= size) {
+              const diff = b.size - size;
+              if (diff < minDiff) {
+                minDiff = diff;
+                bestIdx = i;
+              }
+            }
+          });
+          return bestIdx;
+        } else if (this.algorithm === 'worst-fit') {
+          let worstIdx = -1;
+          let maxSize = -1;
+          this.blocks.forEach((b, i) => {
+            if (b.isFree && b.size >= size) {
+              if (b.size > maxSize) {
+                maxSize = b.size;
+                worstIdx = i;
+              }
+            }
+          });
+          return worstIdx;
+        }
+        return -1;
+      }
+
+      allocate(pid, size) {
+        if (!size || size <= 0) return false;
+        const index = this.findBlock(size);
+        if (index === -1) {
+          this.failedAllocationCount++;
+          return false;
+        }
+
+        const target = this.blocks[index];
+        if (target.size === size) {
+          target.isFree = false;
+          target.pid = pid;
+          target.color = APPLE_PROCESS_PALETTE[Math.abs(hashCode(pid)) % APPLE_PROCESS_PALETTE.length];
+        } else {
+          /* Block Splitting */
+          const allocatedBlock = new MemoryBlock(target.start, size, false, pid);
+          const remainderBlock = new MemoryBlock(target.start + size, target.size - size, true, null);
+          this.blocks.splice(index, 1, allocatedBlock, remainderBlock);
+        }
+
+        this.lastAllocatedIndex = index;
+        this.allocationCount++;
+        return true;
+      }
+
+      free(pid) {
+        let freedAny = false;
+        for (let i = 0; i < this.blocks.length; i++) {
+          if (!this.blocks[i].isFree && this.blocks[i].pid === pid) {
+            this.blocks[i].isFree = true;
+            this.blocks[i].pid = null;
+            this.blocks[i].color = null;
+            freedAny = true;
+          }
+        }
+        if (freedAny) {
+          this.deallocationCount++;
+          this.coalesce();
+        }
+        return freedAny;
+      }
+
+      freeBlockByIndex(index) {
+        if (index >= 0 && index < this.blocks.length && !this.blocks[index].isFree) {
+          this.blocks[index].isFree = true;
+          this.blocks[index].pid = null;
+          this.blocks[index].color = null;
+          this.deallocationCount++;
+          this.coalesce();
+          return true;
+        }
+        return false;
+      }
+
+      /* Coalescing adjacent free blocks */
+      coalesce() {
+        const merged = [];
+        for (let i = 0; i < this.blocks.length; i++) {
+          const curr = this.blocks[i];
+          if (merged.length > 0) {
+            const last = merged[merged.length - 1];
+            if (last.isFree && curr.isFree) {
+              last.size += curr.size;
+              continue;
+            }
+          }
+          merged.push(curr);
+        }
+        this.blocks = merged;
+      }
+    }
+
+    const heap = new HeapManager(1024);
+
+    /* ==========================================================
+       3. UI RENDERING & EVENT HANDLERS
+       ========================================================== */
+    const dom = {
+      deviceWrapper: document.getElementById('device-wrapper'),
+      appViewport: document.getElementById('app-viewport'),
+      storageTrack: document.getElementById('storage-track'),
+      storageLegend: document.getElementById('storage-legend'),
+      dispTotalUsage: document.getElementById('disp-total-usage'),
+      dispTotalCap: document.getElementById('disp-total-cap'),
+      dispFreeCap: document.getElementById('disp-free-cap'),
+      lblUtilization: document.getElementById('lbl-utilization'),
+      diagFrag: document.getElementById('diag-frag'),
+      diagFragSeverity: document.getElementById('diag-frag-severity'),
+      diagSuccess: document.getElementById('diag-success'),
+      diagAllocRatio: document.getElementById('diag-alloc-ratio'),
+      diagLargestFree: document.getElementById('diag-largest-free'),
+      diagBlockCount: document.getElementById('diag-block-count'),
+      diagBlockSplit: document.getElementById('diag-block-split'),
+      blockListContainer: document.getElementById('block-list-container'),
+      lblBlockSummary: document.getElementById('lbl-block-summary'),
+      calloutPopover: document.getElementById('callout-popover'),
+      dynamicIsland: document.getElementById('dynamic-island'),
+      diBadge: document.getElementById('di-badge'),
+      diText: document.getElementById('di-text'),
+      diAlgo: document.getElementById('di-algo'),
+      inputPid: document.getElementById('input-pid'),
+      inputSize: document.getElementById('input-size'),
+      btnAllocate: document.getElementById('btn-allocate'),
+      btnFreeSelected: document.getElementById('btn-free-selected'),
+      btnResetHeap: document.getElementById('btn-reset-heap'),
+      btnDeviceToggle: document.getElementById('btn-device-toggle'),
+      btnThemeToggle: document.getElementById('btn-theme-toggle'),
+      themeLabel: document.getElementById('theme-label'),
+      btnSoundToggle: document.getElementById('btn-sound-toggle'),
+      soundLabel: document.getElementById('sound-label'),
+      algoTabs: document.querySelectorAll('#algo-segmented-control .segment-tab'),
+      algoRuleHint: document.getElementById('algo-rule-hint'),
+      jsonFileInput: document.getElementById('json-file-input')
+    };
+
+    function triggerDynamicIsland(text, badge = '✓', badgeBg = '#34C759') {
+      dom.diBadge.textContent = badge;
+      dom.diBadge.style.backgroundColor = badgeBg;
+      dom.diText.textContent = text;
+      dom.dynamicIsland.classList.add('expanded');
+      setTimeout(() => {
+        dom.dynamicIsland.classList.remove('expanded');
+      }, 1800);
+    }
+
+    function renderUI() {
+      const usedSize = heap.getUsedSize();
+      const freeSize = heap.getFreeSize();
+      const utilPercent = ((usedSize / heap.totalSize) * 100).toFixed(1);
+      const fragPercent = heap.getFragmentation().toFixed(1);
+      const largestFree = heap.getLargestFreeBlock();
+
+      dom.dispTotalUsage.innerHTML = `${usedSize} <small id="disp-total-cap">/ ${heap.totalSize} KB</small>`;
+      dom.dispFreeCap.textContent = `${freeSize} KB`;
+      dom.lblUtilization.textContent = `${utilPercent}% Used`;
+
+      // Storage Track Render
+      dom.storageTrack.innerHTML = '';
+      const uniqueProcesses = new Map();
+
+      heap.blocks.forEach((block, idx) => {
+        const seg = document.createElement('div');
+        seg.className = `storage-segment ${block.isFree ? 'free-block' : 'alloc-block'}`;
+        const pctWidth = (block.size / heap.totalSize) * 100;
+        seg.style.width = `${pctWidth}%`;
+        
+        if (!block.isFree) {
+          seg.style.backgroundColor = block.color;
+          if (!uniqueProcesses.has(block.pid)) {
+            uniqueProcesses.set(block.pid, { color: block.color, size: block.size });
+          } else {
+            uniqueProcesses.get(block.pid).size += block.size;
+          }
+        }
+
+        // Hover & Popover
+        seg.addEventListener('mouseenter', (e) => {
+          showPopover(e, block);
+        });
+        seg.addEventListener('mousemove', (e) => {
+          updatePopoverPos(e);
+        });
+        seg.addEventListener('mouseleave', hidePopover);
+
+        // Tap to Free
+        seg.addEventListener('click', () => {
+          if (!block.isFree) {
+            haptics.playTap();
+            const pid = block.pid;
+            heap.freeBlockByIndex(idx);
+            triggerDynamicIsland(`Freed ${pid} (${block.size} KB)`, '🗑', '#FF3B30');
+            renderUI();
+          }
+        });
+
+        dom.storageTrack.appendChild(seg);
+      });
+
+      // Storage Legend
+      dom.storageLegend.innerHTML = '';
+      uniqueProcesses.forEach((data, pid) => {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        item.innerHTML = `<span class="legend-dot" style="background: ${data.color}"></span><span>${pid} (${data.size} KB)</span>`;
+        dom.storageLegend.appendChild(item);
+      });
+
+      const freeLegend = document.createElement('div');
+      freeLegend.className = 'legend-item';
+      freeLegend.innerHTML = `<span class="legend-dot" style="background: #8E8E93"></span><span>Trống (${freeSize} KB)</span>`;
+      dom.storageLegend.appendChild(freeLegend);
+
+      // Diagnostics Card
+      dom.diagFrag.textContent = `${fragPercent}%`;
+      dom.diagFragSeverity.textContent = fragPercent < 15 ? 'Optimal (Low)' : (fragPercent < 35 ? 'Moderate' : 'High Fragmented');
+      dom.diagFragSeverity.style.color = fragPercent < 15 ? 'var(--apple-green)' : (fragPercent < 35 ? 'var(--apple-orange)' : 'var(--apple-red)');
+
+      const totalAttempts = heap.allocationCount + heap.failedAllocationCount;
+      const successRate = totalAttempts > 0 ? ((heap.allocationCount / totalAttempts) * 100).toFixed(1) : 100;
+      dom.diagSuccess.textContent = `${successRate}%`;
+      dom.diagAllocRatio.textContent = `${heap.allocationCount}/${totalAttempts} allocs`;
+
+      dom.diagLargestFree.textContent = largestFree;
+      dom.diagBlockCount.textContent = heap.blocks.length;
+
+      const allocCount = heap.blocks.filter(b => !b.isFree).length;
+      const freeCount = heap.blocks.filter(b => b.isFree).length;
+      dom.diagBlockSplit.textContent = `${allocCount} used, ${freeCount} free`;
+
+      // Block List Items
+      dom.blockListContainer.innerHTML = '';
+      dom.lblBlockSummary.textContent = `${heap.blocks.length} Nodes (DLL)`;
+
+      heap.blocks.forEach((block, idx) => {
+        const row = document.createElement('div');
+        row.className = 'block-item';
+        
+        const badgeColor = block.isFree ? '#8E8E93' : block.color;
+        const tagText = block.isFree ? 'FREE' : block.pid;
+        const endAddr = block.start + block.size;
+
+        row.innerHTML = `
+          <div class="block-left">
+            <span class="block-tag" style="background: ${badgeColor}">${tagText}</span>
+            <span class="block-range">[${block.start} - ${endAddr}] (${block.size} KB)</span>
+          </div>
+          <div class="block-actions">
+            ${!block.isFree ? `<button class="btn-delete-block" title="Giải phóng block" onclick="freeBlockAt(${idx})">✕</button>` : ''}
+          </div>
+        `;
+        dom.blockListContainer.appendChild(row);
+      });
+    }
+
+    window.freeBlockAt = function(idx) {
+      haptics.playTap();
+      const b = heap.blocks[idx];
+      const pid = b.pid;
+      heap.freeBlockByIndex(idx);
+      triggerDynamicIsland(`Freed ${pid}`, '✓', '#FF9500');
+      renderUI();
+    };
+
+    /* Popover Tooltip */
+    function showPopover(e, block) {
+      dom.calloutPopover.style.display = 'block';
+      const statusText = block.isFree ? 'FREE BLOCK' : `ALLOCATED: ${block.pid}`;
+      dom.calloutPopover.innerHTML = `
+        <strong>${statusText}</strong><br>
+        Offset: <code>${block.start} - ${block.start + block.size} KB</code><br>
+        Size: <code>${block.size} KB</code>
+      `;
+      updatePopoverPos(e);
+    }
+
+    function updatePopoverPos(e) {
+      dom.calloutPopover.style.left = `${e.clientX}px`;
+      dom.calloutPopover.style.top = `${e.clientY - 12}px`;
+    }
+
+    function hidePopover() {
+      dom.calloutPopover.style.display = 'none';
+    }
+
+    /* Algorithm Selection */
+    const algoHints = {
+      'first-fit': 'Tìm block trống đầu tiên đủ kích thước',
+      'next-fit': 'Tiếp tục tìm từ vị trí cấp phát trước',
+      'best-fit': 'Tìm block trống nhỏ nhất đủ kích thước (ít dư nhất)',
+      'worst-fit': 'Tìm block trống lớn nhất (để lại phần dư lớn)'
+    };
+    const algoPillCodes = {
+      'first-fit': 'FF',
+      'next-fit': 'NF',
+      'best-fit': 'BF',
+      'worst-fit': 'WF'
+    };
+
+    dom.algoTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        haptics.playTap();
+        dom.algoTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const algo = tab.dataset.algo;
+        heap.algorithm = algo;
+        dom.algoRuleHint.textContent = algoHints[algo] || '';
+        dom.diAlgo.textContent = algoPillCodes[algo] || 'ALGO';
+        triggerDynamicIsland(`Switched to ${tab.textContent}`, '⚙', '#007AFF');
+      });
+    });
+
+    /* Allocation Button */
+    dom.btnAllocate.addEventListener('click', () => {
+      const pid = (dom.inputPid.value || 'P1').trim();
+      const size = parseInt(dom.inputSize.value, 10);
+      if (!size || size <= 0) {
+        haptics.playWarning();
+        triggerDynamicIsland('Invalid block size', '!', '#FF3B30');
+        return;
+      }
+
+      const success = heap.allocate(pid, size);
+      if (success) {
+        haptics.playSuccess();
+        triggerDynamicIsland(`Allocated ${pid} (${size} KB)`, '✓', '#34C759');
+        // Increment next PID suggestion
+        const match = pid.match(/^P(\d+)$/i);
+        if (match) {
+          dom.inputPid.value = `P${parseInt(match[1], 10) + 1}`;
+        }
+      } else {
+        haptics.playWarning();
+        triggerDynamicIsland(`Failed ${pid}: No fit for ${size} KB`, '✗', '#FF3B30');
+      }
+      renderUI();
+    });
+
+    window.quickAlloc = function(size) {
+      dom.inputSize.value = size;
+      dom.btnAllocate.click();
+    };
+
+    /* Free Button */
+    dom.btnFreeSelected.addEventListener('click', () => {
+      const pid = (dom.inputPid.value || '').trim();
+      if (!pid) return;
+      const ok = heap.free(pid);
+      if (ok) {
+        haptics.playTap();
+        triggerDynamicIsland(`Freed process ${pid}`, '✓', '#FF9500');
+      } else {
+        haptics.playWarning();
+        triggerDynamicIsland(`PID ${pid} not found`, '!', '#8E8E93');
+      }
+      renderUI();
+    });
+
+    /* Reset Heap */
+    dom.btnResetHeap.addEventListener('click', () => {
+      haptics.playTap();
+      heap.reset(1024);
+      dom.inputPid.value = 'P1';
+      triggerDynamicIsland('Heap reset (1024 KB)', '↺', '#007AFF');
+      renderUI();
+    });
+
+    /* Device Viewport Toggle (iPhone vs Studio Expanded) */
+    let isPhoneView = true;
+    dom.btnDeviceToggle.addEventListener('click', () => {
+      haptics.playTap();
+      isPhoneView = !isPhoneView;
+      if (isPhoneView) {
+        dom.appViewport.classList.remove('expanded');
+        dom.btnDeviceToggle.querySelector('span').textContent = 'iPhone View';
+        dom.btnDeviceToggle.classList.add('active');
+      } else {
+        dom.appViewport.classList.add('expanded');
+        dom.btnDeviceToggle.querySelector('span').textContent = 'Expanded Studio';
+        dom.btnDeviceToggle.classList.remove('active');
+      }
+    });
+
+    /* Theme Toggle (Light / Dark) */
+    let isDark = false;
+    dom.btnThemeToggle.addEventListener('click', () => {
+      haptics.playTap();
+      isDark = !isDark;
+      if (isDark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        dom.themeLabel.textContent = 'Light';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        dom.themeLabel.textContent = 'Dark';
+      }
+    });
+
+    /* Haptics Sound Toggle */
+    dom.btnSoundToggle.addEventListener('click', () => {
+      haptics.enabled = !haptics.enabled;
+      dom.soundLabel.textContent = haptics.enabled ? 'Haptic ON' : 'Haptic OFF';
+      if (haptics.enabled) haptics.playSuccess();
+    });
+
+    /* ==========================================================
+       4. AUTOMATION & SIMULATION SCENARIOS
+       ========================================================== */
+    let scenarioQueue = [];
+    let scenarioTimer = null;
+    let isPlaying = false;
+
+    window.loadScenario = function(type) {
+      haptics.playTap();
+      pauseAutoPlay();
+      heap.reset(1024);
+      scenarioQueue = [];
+
+      if (type === 'random') {
+        for (let i = 1; i <= 30; i++) {
+          if (Math.random() < 0.65 || i < 5) {
+            scenarioQueue.push({ type: 'alloc', pid: `P${i}`, size: Math.floor(Math.random() * 200) + 32 });
+          } else {
+            const victim = Math.floor(Math.random() * (i - 1)) + 1;
+            scenarioQueue.push({ type: 'free', pid: `P${victim}` });
+          }
+        }
+        triggerDynamicIsland('Loaded Random Mix Scenario', '🎲', '#5856D6');
+      } else if (type === 'worst') {
+        // Alternating allocations then free every other block to cause maximum external fragmentation
+        for (let i = 1; i <= 8; i++) {
+          scenarioQueue.push({ type: 'alloc', pid: `W${i}`, size: 120 });
+        }
+        // Free even blocks
+        scenarioQueue.push({ type: 'free', pid: 'W2' });
+        scenarioQueue.push({ type: 'free', pid: 'W4' });
+        scenarioQueue.push({ type: 'free', pid: 'W6' });
+        scenarioQueue.push({ type: 'free', pid: 'W8' });
+        // Try allocating a block that needs coalesced space
+        scenarioQueue.push({ type: 'alloc', pid: 'W_Big', size: 240 });
+        triggerDynamicIsland('Loaded Worst-Case Fragmentation', '⚡', '#FF9500');
+      } else if (type === 'web') {
+        // High frequency small allocations (request handlers), occasional large cache allocations
+        for (let i = 1; i <= 25; i++) {
+          if (i % 4 === 0) {
+            scenarioQueue.push({ type: 'alloc', pid: `Cache_${i}`, size: 220 });
+          } else {
+            scenarioQueue.push({ type: 'alloc', pid: `Req_${i}`, size: 48 });
+          }
+          if (i > 3 && i % 2 === 0) {
+            scenarioQueue.push({ type: 'free', pid: `Req_${i - 2}` });
+          }
+        }
+        triggerDynamicIsland('Loaded Web Server Simulation', '🌐', '#007AFF');
+      }
+
+      document.getElementById('sim-status-label').textContent = `${scenarioQueue.length} steps queued`;
+      renderUI();
+    };
+
+    window.stepScenario = function() {
+      if (scenarioQueue.length === 0) {
+        pauseAutoPlay();
+        document.getElementById('sim-status-label').textContent = 'Completed';
+        triggerDynamicIsland('Scenario finished', '✓', '#34C759');
+        return;
+      }
+      const op = scenarioQueue.shift();
+      document.getElementById('sim-status-label').textContent = `${scenarioQueue.length} remaining`;
+      if (op.type === 'alloc') {
+        heap.allocate(op.pid, op.size);
+      } else if (op.type === 'free') {
+        heap.free(op.pid);
+      }
+      renderUI();
+    };
+
+    window.toggleAutoPlay = function() {
+      if (isPlaying) {
+        pauseAutoPlay();
+      } else {
+        startAutoPlay();
+      }
+    };
+
+    function startAutoPlay() {
+      if (scenarioQueue.length === 0) {
+        window.loadScenario('random');
+      }
+      isPlaying = true;
+      document.getElementById('play-btn-text').textContent = '❚❚ Pause';
+      const speed = parseInt(document.getElementById('speed-slider').value, 10);
+      scenarioTimer = setInterval(() => {
+        if (scenarioQueue.length > 0) {
+          stepScenario();
+        } else {
+          pauseAutoPlay();
+        }
+      }, speed);
+    }
+
+    function pauseAutoPlay() {
+      isPlaying = false;
+      document.getElementById('play-btn-text').textContent = '▶ Auto Play';
+      if (scenarioTimer) clearInterval(scenarioTimer);
+    }
+
+    /* JSON Import / Export matching C format */
+    window.exportStateJSON = function() {
+      haptics.playTap();
+      const exportData = {
+        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+        algorithm: heap.algorithm,
+        state: {
+          total_size: heap.totalSize,
+          used_size: heap.getUsedSize(),
+          free_size: heap.getFreeSize(),
+          utilization_percent: parseFloat(((heap.getUsedSize() / heap.totalSize) * 100).toFixed(2)),
+          fragmentation_percent: parseFloat(heap.getFragmentation().toFixed(2)),
+          largest_free_block: heap.getLargestFreeBlock()
+        },
+        operations: {
+          allocations: heap.allocationCount,
+          deallocations: heap.deallocationCount,
+          failed_allocations: heap.failedAllocationCount
+        },
+        blocks: heap.blocks.map(b => ({
+          start: b.start,
+          size: b.size,
+          end: b.start + b.size,
+          free: b.isFree,
+          process: b.isFree ? null : b.pid
+        }))
+      };
+
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `memory_snapshot_${heap.algorithm}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      triggerDynamicIsland('Snapshot Exported', '↓', '#007AFF');
+    };
+
+    window.importStateJSON = function() {
+      dom.jsonFileInput.click();
+    };
+
+    dom.jsonFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const data = JSON.parse(evt.target.result);
+          if (data.blocks && Array.isArray(data.blocks)) {
+            // Restore from snapshot
+            heap.totalSize = data.state ? data.state.total_size : (data.total_size || 1024);
+            heap.blocks = data.blocks.map(b => new MemoryBlock(b.start, b.size, b.free, b.process || b.process_id));
+            heap.algorithm = data.algorithm ? data.algorithm.toLowerCase().replace(' ', '-') : 'first-fit';
+            renderUI();
+            haptics.playSuccess();
+            triggerDynamicIsland('Snapshot Imported!', '✓', '#34C759');
+          } else {
+            alert('File JSON không đúng cấu trúc Memory Snapshot.');
+          }
+        } catch (err) {
+          alert('Lỗi đọc file JSON: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    // Real-time Status Clock
+    setInterval(() => {
+      const now = new Date();
+      let hrs = now.getHours();
+      let mins = now.getMinutes();
+      dom.deviceWrapper.querySelector('#status-time').textContent = `${hrs}:${mins < 10 ? '0' + mins : mins}`;
+    }, 1000);
+
+    // Initial render
+    renderUI();
+  </script>
+</body>
+</html>

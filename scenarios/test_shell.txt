@@ -1,0 +1,50 @@
+# Test script for Interactive Shell
+# This file demonstrates the shell commands
+# Usage: ./memory_allocator -b scenarios/test_shell.txt
+
+# Initialize heap with 1000 bytes
+init 1000
+
+# Set algorithm to Best Fit
+algo bf
+
+# Allocate some processes
+alloc P1:100
+alloc P2:300
+alloc P3:200
+
+# Display beautiful memory map (default)
+show
+
+# Display with full details
+show detail
+
+# Display simple text view
+show simple
+
+# Display statistics
+stat
+
+# Free a process
+free P2
+
+# Allocate another process (will use freed space)
+alloc P4:50
+
+# Display memory map again
+show
+
+# Display fragmentation report
+frag
+
+# Display statistics
+stat
+
+# Reset heap
+reset
+
+# Show empty heap
+show
+
+# Exit (optional - file will end anyway)
+# exit

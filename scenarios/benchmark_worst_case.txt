@@ -1,0 +1,23 @@
+init 5000
+
+# fill heap completely
+alloc P1:500
+alloc P2:500
+alloc P3:500
+alloc P4:500
+alloc P5:500
+alloc P6:500
+alloc P7:500
+alloc P8:500
+alloc P9:500
+alloc P10:500
+
+# free alternating
+free P2
+free P4
+free P6
+free P8
+free P10
+
+# now try
+alloc P11:600   # SHOULD FAIL
