@@ -73,6 +73,15 @@ desktop.ini
 *.sublime-project
 *.sublime-workspace
 
+# AI Agents & Skills
+.agents/
+.agent/
+_agents/
+_agent/
+skills/
+.claude/
+.claude-plugin/
+
 # Runtime export files (allow benchmark reference files)
 state*.json
 snapshot*.json
