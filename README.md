@@ -33,15 +33,15 @@ This project simulates how operating systems manage heap memory using different 
 - Script mode for automated testing
 - Performance benchmarking
 - Command-line interface
-- 📱 **Interactive Web Visualizer (Apple iOS 18 / iPhone Theme)**:
-  - Thiết kế chuẩn theo **Apple Human Interface Guidelines (HIG)** ứng dụng kỹ năng `ui-ux-pro-max-skill`.
-  - **Dynamic Island**: Hiển thị trạng thái cấp phát bộ nhớ & thông báo thời gian thực với hiệu ứng mở rộng vật lý.
-  - **iPhone Storage Bar**: Trực quan hóa heap bộ nhớ chuẩn phong cách mục *iPhone Storage* trong Settings của iOS.
-  - **Cupertino Segmented Control**: Chuyển đổi thuật toán cấp phát mượt mà (First Fit, Next Fit, Best Fit, Worst Fit).
-  - **Simulation & Scenarios**: Chạy mô phỏng kịch bản tải thực tế (*Random Mix, Worst-Case Fragmentation, Web Server Traffic*).
-  - **Haptic Audio Feedback**: Hiệu ứng âm thanh xúc giác (haptic clicks) mô phỏng Apple Taptic Engine qua Web Audio API.
-  - **Export & Import Snapshot**: Xuất/nhập dữ liệu trực tiếp tương thích với kết quả JSON và HTML của bản build C (`./memory_allocator`).
-  - Hỗ trợ cả **iPhone Device View** (khung máy iPhone 16 Pro) và **Expanded Studio View** (màn hình rộng máy tính).
+- 🖥️ **Interactive Web Visualizer (Apple iOS/macOS Theme - Desktop Dashboard)**:
+  - Thiết kế chuẩn theo **Apple Human Interface Guidelines (HIG)** ứng dụng kỹ năng `ui-ux-pro-max-skill`, tối ưu bố cục dạng Dashboard màn hình rộng trên máy tính (không mô phỏng viền điện thoại).
+  - **Bảng màu chủ đề chuẩn Apple iOS/macOS**: Sử dụng trọn vẹn bộ System Palette (`System Blue #007AFF`, `System Green #34C759`, `Indigo #5856D6`, `Orange #FF9500`, `Purple #AF52DE`, `Red #FF3B30`, `Teal #30B0C7`, `Yellow #FFCC00`) cùng hiệu ứng kính mờ (frosted glass) và thẻ bo góc mềm mại.
+  - **Apple System Storage Bar**: Thanh trực quan hóa bộ nhớ liên tục trải rộng toàn màn hình, hiển thị phân bố khối nhớ vật lý trực quan kèm chú thích tiến trình và trạng thái phân đoạn.
+  - **Cupertino Segmented Control**: Bộ điều khiển chuyển đổi giữa 4 thuật toán cấp phát (`First Fit`, `Next Fit`, `Best Fit`, `Worst Fit`) kèm mô tả cơ chế hoạt động.
+  - **Mô phỏng Kịch bản Thực tế**: Chạy tự động các kịch bản tải của Hệ Điều Hành (*Random Mix, Worst-Case Fragmentation, Web Server Workload*), có nút Play/Pause, Step từng bước và điều chỉnh tốc độ.
+  - **Chẩn đoán & Liên kết Đôi (DLL)**: Trực quan hóa danh sách liên kết đôi (Doubly-Linked List) dạng thẻ node tương tác, đo lường tỷ lệ phân đoạn ngoại và tỷ lệ thành công.
+  - **Đồng bộ Dữ liệu C / JSON**: Xuất và nhập snapshot bộ nhớ tương thích 100% với file output của bản build C (`./memory_allocator`).
+  - **Âm thanh phản hồi Haptic Apple**: Mô phỏng tiếng click xúc giác nhẹ khi bấm nút thông qua Web Audio API.
 
 ## 🛠️ Build Instructions
 

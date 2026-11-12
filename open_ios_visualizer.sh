@@ -4,7 +4,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 HTML_PATH="$SCRIPT_DIR/web/index.html"
 
 echo "========================================================"
-echo "  MemoryOS - Apple Native iOS Memory Visualizer"
+echo "  MemoryOS - Memory Allocator Visualizer (Apple Theme)"
 echo "========================================================"
 
 if which xdg-open > /dev/null 2>&1; then

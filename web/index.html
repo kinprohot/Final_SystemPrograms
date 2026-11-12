@@ -2,27 +2,28 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>MemoryOS - Memory Allocation Simulator (iOS Theme)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MemoryOS - Memory Allocation Simulator (Apple iOS/macOS Theme)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&family=SF+Pro+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&family=SF+Pro+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Apple iOS 18 Design Tokens (Light Mode default) */
+      /* Apple iOS / macOS Design System Color Tokens */
       --ios-bg: #F2F2F7;
       --ios-card: #FFFFFF;
-      --ios-card-secondary: #F8F8F9;
+      --ios-card-secondary: #F8F9FA;
       --ios-surface-tertiary: #E5E5EA;
-      --ios-text-primary: #000000;
+      --ios-text-primary: #1C1C1E;
       --ios-text-secondary: #8E8E93;
-      --ios-text-tertiary: #C7C7CC;
+      --ios-text-tertiary: #AEAEB2;
       --ios-separator: rgba(60, 60, 67, 0.12);
-      --ios-fill: rgba(120, 120, 128, 0.16);
-      --ios-fill-tertiary: rgba(118, 118, 128, 0.12);
-      
+      --ios-fill: rgba(120, 120, 128, 0.12);
+      --ios-fill-tertiary: rgba(118, 118, 128, 0.08);
+
       /* Apple HIG System Accents */
       --apple-blue: #007AFF;
+      --apple-blue-hover: #0062CC;
       --apple-green: #34C759;
       --apple-indigo: #5856D6;
       --apple-orange: #FF9500;
@@ -33,19 +34,18 @@
       --apple-yellow: #FFCC00;
       --apple-gray: #8E8E93;
 
-      /* Device dimensions & springs */
+      /* Apple Springs & Radii */
       --spring-bounce: cubic-bezier(0.32, 0.72, 0, 1);
-      --radius-sm: 10px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
-      --radius-xl: 28px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 22px;
       --radius-full: 9999px;
-      
-      /* Shadows */
-      --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.04);
-      --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-      --shadow-sheet: 0 12px 40px rgba(0, 0, 0, 0.15);
-      --shadow-device: 0 25px 60px -15px rgba(0, 0, 0, 0.25), 0 0 0 12px #1c1c1e, 0 0 0 14px #2c2c2e;
+
+      /* Apple Elevation Shadows */
+      --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+      --shadow-card: 0 4px 24px -2px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-elevated: 0 12px 36px -4px rgba(0, 0, 0, 0.1);
     }
 
     [data-theme="dark"] {
@@ -55,11 +55,11 @@
       --ios-surface-tertiary: #3A3A3C;
       --ios-text-primary: #FFFFFF;
       --ios-text-secondary: #8E8E93;
-      --ios-text-tertiary: #48484A;
+      --ios-text-tertiary: #636366;
       --ios-separator: rgba(84, 84, 88, 0.36);
-      --ios-fill: rgba(120, 120, 128, 0.32);
-      --ios-fill-tertiary: rgba(118, 118, 128, 0.24);
-      --shadow-device: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 12px #2c2c2e, 0 0 0 14px #3a3a3c;
+      --ios-fill: rgba(120, 120, 128, 0.28);
+      --ios-fill-tertiary: rgba(118, 118, 128, 0.18);
+      --shadow-card: 0 4px 24px -2px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
     }
 
     * {
@@ -67,7 +67,6 @@
       margin: 0;
       padding: 0;
       -webkit-tap-highlight-color: transparent;
-      user-select: none;
     }
 
     body {
@@ -80,26 +79,40 @@
       align-items: center;
       transition: background-color 0.3s var(--spring-bounce);
       overflow-x: hidden;
-      padding-bottom: 40px;
+      line-height: 1.45;
     }
 
-    /* Top Studio Bar */
-    .studio-header {
+    /* Top Desktop Header (Apple macOS Navigation Bar) */
+    .desktop-header {
       width: 100%;
-      max-width: 1300px;
-      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      background: rgba(242, 242, 247, 0.85);
+      border-bottom: 1px solid var(--ios-separator);
+      transition: background-color 0.3s;
+    }
+
+    [data-theme="dark"] .desktop-header {
+      background: rgba(28, 28, 30, 0.85);
+    }
+
+    .header-content {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 12px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      z-index: 50;
+      gap: 20px;
     }
 
-    .studio-brand {
+    .brand-section {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
     .brand-icon {
@@ -110,48 +123,77 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+      box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3);
+      color: #FFFFFF;
+      flex-shrink: 0;
     }
 
     .brand-icon svg {
-      width: 24px;
-      height: 24px;
-      fill: #FFFFFF;
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
     }
 
-    .brand-text h1 {
-      font-size: 20px;
+    .brand-titles h1 {
+      font-size: 19px;
       font-weight: 700;
       letter-spacing: -0.4px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .ios-badge {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 12px;
-      background: rgba(0, 122, 255, 0.12);
-      color: var(--apple-blue);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .brand-text p {
-      font-size: 13px;
-      color: var(--ios-text-secondary);
-    }
-
-    .studio-controls {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .mode-pill-btn {
+    .theme-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: var(--radius-full);
+      background: rgba(0, 122, 255, 0.12);
+      color: var(--apple-blue);
+      letter-spacing: 0.3px;
+    }
+
+    .brand-titles p {
+      font-size: 12.5px;
+      color: var(--ios-text-secondary);
+      font-weight: 400;
+    }
+
+    .header-quick-stats {
       display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--ios-fill-tertiary);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--ios-separator);
+      font-size: 12.5px;
+      font-weight: 500;
+    }
+
+    .stat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .stat-dot.green { background: var(--apple-green); box-shadow: 0 0 8px rgba(52, 199, 89, 0.5); }
+    .stat-dot.blue { background: var(--apple-blue); }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .apple-action-btn {
+      display: inline-flex;
       align-items: center;
       gap: 6px;
       padding: 8px 14px;
@@ -159,262 +201,119 @@
       background: var(--ios-card);
       border: 1px solid var(--ios-separator);
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 500;
       color: var(--ios-text-primary);
       cursor: pointer;
       box-shadow: var(--shadow-subtle);
       transition: all 0.2s var(--spring-bounce);
     }
 
-    .mode-pill-btn:hover {
-      transform: scale(1.03);
+    .apple-action-btn:hover {
+      background: var(--ios-fill);
+      transform: translateY(-1px);
     }
 
-    .mode-pill-btn:active {
+    .apple-action-btn:active {
       transform: scale(0.97);
     }
 
-    .mode-pill-btn.active {
-      background: var(--apple-blue);
-      color: #FFFFFF;
-      border-color: var(--apple-blue);
-    }
-
-    /* Main Container */
-    .app-viewport {
+    /* Main Desktop Presentation Container */
+    .dashboard-container {
       width: 100%;
-      max-width: 1240px;
-      display: flex;
-      justify-content: center;
-      padding: 10px 20px;
-      gap: 30px;
-    }
-
-    /* iPhone Frame Mockup Mode */
-    .device-wrapper {
-      position: relative;
-      width: 395px;
-      min-height: 844px;
-      background: var(--ios-bg);
-      border-radius: 54px;
-      overflow: hidden;
-      box-shadow: var(--shadow-device);
+      max-width: 1440px;
+      padding: 24px 28px 60px 28px;
       display: flex;
       flex-direction: column;
-      border: 4px solid #333336;
-      transition: all 0.4s var(--spring-bounce);
-    }
-
-    /* Studio / Expanded Mode */
-    .app-viewport.expanded .device-wrapper {
-      width: 100%;
-      max-width: 1100px;
-      min-height: auto;
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--ios-separator);
-      box-shadow: var(--shadow-card);
-    }
-
-    /* iPhone Status Bar */
-    .ios-status-bar {
-      height: 48px;
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 14px;
-      font-weight: 600;
-      z-index: 40;
-      position: relative;
-    }
-
-    .app-viewport.expanded .ios-status-bar {
-      display: none;
-    }
-
-    .status-time {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: -0.2px;
-    }
-
-    .status-icons {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .status-icons svg {
-      width: 16px;
-      height: 16px;
-      fill: currentColor;
-    }
-
-    /* Dynamic Island */
-    .dynamic-island-container {
-      position: absolute;
-      top: 11px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 45;
-    }
-
-    .app-viewport.expanded .dynamic-island-container {
-      position: static;
-      transform: none;
-      margin: 12px auto;
-      display: flex;
-      justify-content: center;
-    }
-
-    .dynamic-island {
-      background: #000000;
-      color: #FFFFFF;
-      min-width: 120px;
-      height: 35px;
-      border-radius: 20px;
-      padding: 0 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-      transition: all 0.35s var(--spring-bounce);
-    }
-
-    .dynamic-island.expanded {
-      min-width: 320px;
-      height: 60px;
-      padding: 10px 18px;
-      border-radius: 30px;
-    }
-
-    .di-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .di-pill-badge {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--apple-green);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-    }
-
-    .di-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--apple-teal);
-    }
-
-    .di-waveform {
-      display: flex;
-      align-items: center;
-      gap: 2px;
-    }
-
-    .di-wave-bar {
-      width: 3px;
-      height: 8px;
-      background: var(--apple-green);
-      border-radius: 2px;
-      animation: pulseWave 1.2s infinite ease-in-out alternate;
-    }
-    .di-wave-bar:nth-child(2) { animation-delay: 0.2s; height: 14px; }
-    .di-wave-bar:nth-child(3) { animation-delay: 0.4s; height: 10px; }
-
-    @keyframes pulseWave {
-      0% { transform: scaleY(0.4); opacity: 0.6; }
-      100% { transform: scaleY(1.2); opacity: 1; }
-    }
-
-    /* Device Content Scroll Area */
-    .ios-scroll-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px 18px 80px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      scrollbar-width: thin;
-    }
-
-    .app-viewport.expanded .ios-scroll-content {
-      padding: 24px 32px 40px 32px;
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
       gap: 24px;
     }
 
-    /* iOS Inset Group Container */
-    .ios-section {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .ios-section-header {
-      font-size: 13px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-      color: var(--ios-text-secondary);
-      padding-left: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .ios-card {
+    /* Apple Grouped Card */
+    .apple-card {
       background: var(--ios-card);
       border-radius: var(--radius-lg);
-      padding: 16px;
-      box-shadow: var(--shadow-subtle);
+      padding: 22px 24px;
+      box-shadow: var(--shadow-card);
       border: 1px solid var(--ios-separator);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
       transition: background-color 0.3s;
     }
 
-    /* iPhone Storage Bar (Main Star Component) */
-    .storage-header {
+    .card-header-row {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: flex-end;
+      margin-bottom: 16px;
     }
 
-    .storage-title {
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-icon-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
       font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .card-subtitle {
+      font-size: 12.5px;
+      color: var(--ios-text-secondary);
+    }
+
+    /* ========================================================
+       APPLE STORAGE BAR (DESKTOP FULL WIDTH)
+       ======================================================== */
+    .storage-overview-grid {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 30px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .storage-big-stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .storage-big-stat .label {
+      font-size: 12px;
+      text-transform: uppercase;
       font-weight: 600;
       color: var(--ios-text-secondary);
+      letter-spacing: 0.5px;
     }
 
-    .storage-value {
-      font-size: 26px;
+    .storage-big-stat .value {
+      font-size: 32px;
       font-weight: 700;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.8px;
+      font-family: "JetBrains Mono", -apple-system, sans-serif;
     }
 
-    .storage-value small {
-      font-size: 15px;
-      font-weight: 500;
+    .storage-big-stat .value small {
+      font-size: 16px;
       color: var(--ios-text-secondary);
+      font-weight: 500;
     }
 
-    .iphone-storage-track {
+    .apple-storage-bar-track {
       width: 100%;
-      height: 28px;
-      border-radius: 9px;
+      height: 36px;
+      border-radius: var(--radius-md);
       background: var(--ios-surface-tertiary);
       overflow: hidden;
       display: flex;
@@ -422,214 +321,244 @@
       position: relative;
     }
 
-    .storage-segment {
+    .storage-block-segment {
       height: 100%;
-      transition: width 0.4s var(--spring-bounce);
+      transition: width 0.35s var(--spring-bounce);
       position: relative;
       cursor: pointer;
-      min-width: 2px;
+      min-width: 3px;
     }
 
-    .storage-segment:hover {
-      filter: brightness(1.15);
-      z-index: 5;
+    .storage-block-segment:hover {
+      filter: brightness(1.18);
+      z-index: 10;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
     }
 
-    .storage-segment.free-block {
+    .storage-block-segment.free-block {
       background: repeating-linear-gradient(
         45deg,
-        rgba(142, 142, 147, 0.18),
-        rgba(142, 142, 147, 0.18) 6px,
-        rgba(142, 142, 147, 0.3) 6px,
-        rgba(142, 142, 147, 0.3) 12px
+        rgba(142, 142, 147, 0.15),
+        rgba(142, 142, 147, 0.15) 8px,
+        rgba(142, 142, 147, 0.28) 8px,
+        rgba(142, 142, 147, 0.28) 16px
       );
     }
 
-    /* Legend & Categories */
-    .storage-legend-grid {
+    .storage-legend-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px 16px;
-      padding-top: 4px;
+      align-items: center;
+      gap: 12px 20px;
+      padding-top: 14px;
+      border-top: 1px solid var(--ios-separator);
     }
 
-    .legend-item {
+    .legend-item-pill {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 12px;
+      gap: 8px;
+      font-size: 13px;
       font-weight: 500;
-      color: var(--ios-text-primary);
+      background: var(--ios-card-secondary);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--ios-separator);
     }
 
-    .legend-dot {
+    .legend-color-dot {
       width: 10px;
       height: 10px;
       border-radius: 3px;
     }
 
+    /* ========================================================
+       3-COLUMN DESKTOP DASHBOARD GRID
+       ======================================================== */
+    .desktop-dashboard-grid {
+      display: grid;
+      grid-template-columns: 360px 1fr 380px;
+      gap: 24px;
+      align-items: start;
+    }
+
     /* Cupertino Segmented Control */
     .segmented-control {
       background: var(--ios-fill-tertiary);
-      border-radius: 10px;
-      padding: 3px;
+      border-radius: var(--radius-md);
+      padding: 4px;
       display: flex;
       position: relative;
-      gap: 2px;
+      gap: 3px;
+      border: 1px solid var(--ios-separator);
     }
 
-    .segment-tab {
+    .segment-tab-btn {
       flex: 1;
-      padding: 8px 4px;
+      padding: 9px 8px;
       text-align: center;
       font-size: 13px;
       font-weight: 600;
-      color: var(--ios-text-primary);
-      border-radius: 8px;
+      color: var(--ios-text-secondary);
+      border-radius: 9px;
       cursor: pointer;
       position: relative;
       z-index: 2;
-      transition: all 0.25s var(--spring-bounce);
+      transition: all 0.22s var(--spring-bounce);
       border: none;
       background: transparent;
+      user-select: none;
     }
 
-    .segment-tab.active {
-      background: var(--ios-card);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    .segment-tab-btn:hover {
       color: var(--ios-text-primary);
     }
 
-    [data-theme="dark"] .segment-tab.active {
-      background: #636366;
+    .segment-tab-btn.active {
+      background: var(--ios-card);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+      color: var(--apple-blue);
     }
 
-    /* Inset Row Items */
-    .ios-cell {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 0.5px solid var(--ios-separator);
-    }
-
-    .ios-cell:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .ios-cell:first-child {
-      padding-top: 0;
-    }
-
-    .cell-label {
-      font-size: 15px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .cell-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 7px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    [data-theme="dark"] .segment-tab-btn.active {
+      background: #3A3A3C;
       color: #FFFFFF;
     }
 
-    .cell-icon svg {
-      width: 16px;
-      height: 16px;
-      fill: currentColor;
-    }
-
-    .cell-value {
-      font-size: 15px;
+    .algo-description-box {
+      background: var(--ios-card-secondary);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      border: 1px solid var(--ios-separator);
+      font-size: 12.5px;
       color: var(--ios-text-secondary);
-      font-family: "JetBrains Mono", monospace;
-    }
-
-    /* iOS Form Inputs */
-    .ios-input-group {
       display: flex;
       gap: 10px;
+      align-items: flex-start;
+      margin-top: 10px;
     }
 
-    .ios-input {
+    .algo-description-box strong {
+      color: var(--ios-text-primary);
+    }
+
+    /* Form Inputs & Controls */
+    .apple-input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .apple-input {
       flex: 1;
       background: var(--ios-surface-tertiary);
       border: 1px solid transparent;
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-size: 15px;
-      font-family: inherit;
+      border-radius: var(--radius-md);
+      padding: 11px 14px;
+      font-size: 14.5px;
+      font-family: "JetBrains Mono", -apple-system, sans-serif;
       color: var(--ios-text-primary);
       outline: none;
       transition: all 0.2s;
     }
 
-    .ios-input:focus {
+    .apple-input:focus {
       border-color: var(--apple-blue);
       background: var(--ios-card);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
     }
 
-    /* iOS Action Buttons */
-    .ios-btn {
+    .apple-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 12px 18px;
-      border-radius: 12px;
-      font-size: 15px;
+      gap: 7px;
+      padding: 11px 18px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
       font-weight: 600;
       border: none;
       cursor: pointer;
       transition: all 0.2s var(--spring-bounce);
+      user-select: none;
+      white-space: nowrap;
     }
 
-    .ios-btn:active {
-      transform: scale(0.96);
-      filter: brightness(0.9);
+    .apple-btn:active {
+      transform: scale(0.97);
     }
 
-    .btn-primary {
+    .btn-blue {
       background: var(--apple-blue);
       color: #FFFFFF;
+      box-shadow: 0 3px 10px rgba(0, 122, 255, 0.25);
+    }
+
+    .btn-blue:hover {
+      background: var(--apple-blue-hover);
     }
 
     .btn-secondary {
       background: var(--ios-fill);
-      color: var(--apple-blue);
+      color: var(--ios-text-primary);
     }
 
-    .btn-destructive {
+    .btn-secondary:hover {
+      background: var(--ios-surface-tertiary);
+    }
+
+    .btn-red {
       background: rgba(255, 59, 48, 0.12);
       color: var(--apple-red);
     }
 
-    .btn-icon-only {
-      padding: 8px;
-      border-radius: 50%;
-      background: var(--ios-fill);
-      color: var(--apple-blue);
+    .btn-red:hover {
+      background: rgba(255, 59, 48, 0.2);
     }
 
-    /* Quick Preset Chips */
-    .preset-chips {
+    /* Preset Size Pills */
+    .preset-pills-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 7px;
+      margin-bottom: 14px;
     }
 
-    .chip-btn {
+    .preset-pill-btn {
       padding: 6px 12px;
       border-radius: var(--radius-full);
-      background: var(--ios-fill-tertiary);
+      background: var(--ios-card-secondary);
       border: 1px solid var(--ios-separator);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ios-text-primary);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .preset-pill-btn:hover {
+      background: var(--apple-blue);
+      color: #FFFFFF;
+      border-color: var(--apple-blue);
+    }
+
+    /* Simulation Scenarios Box */
+    .scenarios-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .scenario-select-btn {
+      padding: 10px 8px;
+      border-radius: var(--radius-md);
+      background: var(--ios-card-secondary);
+      border: 1px solid var(--ios-separator);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
       font-size: 12px;
       font-weight: 600;
       color: var(--ios-text-primary);
@@ -637,541 +566,629 @@
       transition: all 0.2s;
     }
 
-    .chip-btn:hover {
-      background: var(--apple-blue);
-      color: #FFFFFF;
+    .scenario-select-btn:hover {
       border-color: var(--apple-blue);
+      background: rgba(0, 122, 255, 0.05);
     }
 
-    /* Health/Activity Ring Dashboard */
-    .metrics-grid {
+    .scenario-select-btn .icon {
+      font-size: 16px;
+    }
+
+    .playback-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--ios-card-secondary);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--ios-separator);
+    }
+
+    /* Activity & Diagnostic Metric Cards */
+    .metrics-dashboard-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 12px;
     }
 
-    .metric-card {
-      background: var(--ios-card);
+    .metric-apple-card {
+      background: var(--ios-card-secondary);
       border-radius: var(--radius-md);
-      padding: 14px;
+      padding: 14px 16px;
       border: 1px solid var(--ios-separator);
       display: flex;
       flex-direction: column;
       gap: 4px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .metric-title {
+    .metric-apple-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+    }
+
+    .metric-apple-card.frag::before { background: var(--apple-purple); }
+    .metric-apple-card.success::before { background: var(--apple-green); }
+    .metric-apple-card.largest::before { background: var(--apple-blue); }
+    .metric-apple-card.blocks::before { background: var(--apple-orange); }
+
+    .metric-label {
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--ios-text-secondary);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
 
-    .metric-number {
-      font-size: 24px;
+    .metric-val {
+      font-size: 26px;
       font-weight: 700;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.6px;
       font-family: "JetBrains Mono", monospace;
     }
 
-    .metric-subtitle {
-      font-size: 11px;
+    .metric-footnote {
+      font-size: 11.5px;
       color: var(--ios-text-secondary);
     }
 
-    /* Memory Block Detailed List */
-    .block-list {
-      max-height: 240px;
+    /* Doubly-Linked List Visualizer */
+    .dll-container {
+      max-height: 440px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
       padding-right: 4px;
     }
 
-    .block-item {
+    .dll-node-card {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 12px;
-      border-radius: 10px;
+      padding: 10px 14px;
       background: var(--ios-card-secondary);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--ios-separator);
       font-size: 13px;
       transition: background 0.2s;
     }
 
-    .block-item:hover {
+    .dll-node-card:hover {
       background: var(--ios-surface-tertiary);
     }
 
-    .block-left {
+    .dll-node-left {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
-    .block-tag {
-      padding: 2px 6px;
+    .node-tag {
+      padding: 3px 8px;
       border-radius: 6px;
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: 0.2px;
+    }
+
+    .node-range {
+      font-family: "JetBrains Mono", monospace;
+      color: var(--ios-text-secondary);
+      font-size: 12.5px;
+    }
+
+    .node-btn-free {
+      background: transparent;
+      border: 1px solid rgba(255, 59, 48, 0.3);
+      color: var(--apple-red);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .node-btn-free:hover {
+      background: var(--apple-red);
       color: #FFFFFF;
     }
 
-    .block-range {
-      font-family: "JetBrains Mono", monospace;
-      color: var(--ios-text-secondary);
-      font-size: 12px;
+    /* Benchmark Table */
+    .benchmark-table-wrapper {
+      overflow-x: auto;
     }
 
-    .block-actions {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .btn-delete-block {
-      background: transparent;
-      border: none;
-      color: var(--apple-red);
-      cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
-    }
-
-    .btn-delete-block:hover {
-      background: rgba(255, 59, 48, 0.15);
-    }
-
-    /* iPhone Bottom Home Bar */
-    .ios-home-indicator {
-      width: 134px;
-      height: 5px;
-      background: var(--ios-text-primary);
-      opacity: 0.3;
-      border-radius: 100px;
-      position: absolute;
-      bottom: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 50;
-    }
-
-    .app-viewport.expanded .ios-home-indicator {
-      display: none;
-    }
-
-    /* Benchmark Compare View (Modal or Inset) */
-    .benchmark-table {
+    .benchmark-desktop-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 12px;
+      font-size: 13px;
     }
 
-    .benchmark-table th {
+    .benchmark-desktop-table th {
       text-align: left;
-      padding: 8px 6px;
+      padding: 10px 14px;
       color: var(--ios-text-secondary);
       border-bottom: 1px solid var(--ios-separator);
       font-weight: 600;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
     }
 
-    .benchmark-table td {
-      padding: 8px 6px;
-      border-bottom: 0.5px solid var(--ios-separator);
+    .benchmark-desktop-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--ios-separator);
       font-family: "JetBrains Mono", monospace;
     }
 
-    .badge-trophy {
+    .trophy-badge {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 2px 6px;
+      padding: 3px 8px;
       border-radius: 6px;
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 600;
       background: rgba(255, 204, 0, 0.15);
       color: #D48800;
     }
 
-    /* Toast Tooltip for Storage Bar */
-    .ios-callout-popover {
-      position: fixed;
-      background: rgba(0, 0, 0, 0.88);
-      color: #FFFFFF;
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 500;
-      pointer-events: none;
-      z-index: 100;
-      transform: translate(-50%, -120%);
-      backdrop-filter: blur(16px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-      display: none;
-      white-space: nowrap;
-      transition: opacity 0.2s;
+    [data-theme="dark"] .trophy-badge {
+      color: #FFD60A;
+      background: rgba(255, 214, 10, 0.2);
     }
 
-    /* Responsive adjustments */
-    @media (max-width: 600px) {
-      .app-viewport {
-        padding: 0;
+    /* Popover Tooltip */
+    .apple-popover {
+      position: fixed;
+      background: rgba(28, 28, 30, 0.94);
+      color: #FFFFFF;
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      font-size: 12.5px;
+      font-weight: 500;
+      pointer-events: none;
+      z-index: 1000;
+      transform: translate(-50%, -125%);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow-elevated);
+      display: none;
+      white-space: nowrap;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      line-height: 1.5;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .desktop-dashboard-grid {
+        grid-template-columns: 1fr 1fr;
       }
-      .device-wrapper {
-        width: 100%;
-        min-height: 100vh;
-        border-radius: 0;
-        border: none;
-        box-shadow: none;
+      .desktop-dashboard-grid > div:last-child {
+        grid-column: span 2;
       }
-      .studio-header {
-        padding: 12px 16px;
+    }
+
+    @media (max-width: 768px) {
+      .desktop-dashboard-grid {
+        grid-template-columns: 1fr;
       }
-      .brand-text h1 {
-        font-size: 17px;
+      .desktop-dashboard-grid > div:last-child {
+        grid-column: span 1;
+      }
+      .storage-overview-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .dashboard-container {
+        padding: 16px 14px;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Studio Navigation Bar -->
-  <header class="studio-header">
-    <div class="studio-brand">
-      <div class="brand-icon">
-        <svg viewBox="0 0 24 24"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6zm3 2v8h2V8H7zm4 0v8h2V8h-2zm4 0v4h2V8h-2z"/></svg>
+  <!-- Top Desktop Header (Apple Navigation Bar) -->
+  <header class="desktop-header">
+    <div class="header-content">
+      <div class="brand-section">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6zm3 2v8h2V8H7zm4 0v8h2V8h-2zm4 0v4h2V8h-2z"/></svg>
+        </div>
+        <div class="brand-titles">
+          <h1>MemoryOS <span class="theme-badge">Apple iOS Color Theme</span></h1>
+          <p>Mô phỏng Quản lý Cấp phát Bộ nhớ Heap trong Hệ Điều Hành (C99 / POSIX)</p>
+        </div>
       </div>
-      <div class="brand-text">
-        <h1>MemoryOS <span class="ios-badge">iOS 18 Theme</span></h1>
-        <p>Memory Allocation Algorithms Simulator</p>
+
+      <div class="header-quick-stats">
+        <div class="stat-pill">
+          <div class="stat-dot green"></div>
+          <span>Thuật toán: <strong id="hdr-current-algo" style="color: var(--apple-blue);">First Fit</strong></span>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-dot blue"></div>
+          <span>Tải bộ nhớ: <strong id="hdr-usage-ratio">0 / 1024 KB (0%)</strong></span>
+        </div>
       </div>
-    </div>
 
-    <div class="studio-controls">
-      <button class="mode-pill-btn active" id="btn-device-toggle" title="Chuyển đổi giao diện iPhone và Desktop">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
-        <span>iPhone View</span>
-      </button>
+      <div class="header-actions">
+        <button class="apple-action-btn" id="btn-theme-toggle" title="Đổi màu chủ đề Sáng / Tối">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+          <span id="theme-btn-text">Dark Mode</span>
+        </button>
 
-      <button class="mode-pill-btn" id="btn-theme-toggle" title="Đổi giao diện Sáng / Tối">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
-        <span id="theme-label">Dark</span>
-      </button>
-
-      <button class="mode-pill-btn" id="btn-sound-toggle" title="Bật/Tắt âm thanh Haptic">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-        <span id="sound-label">Haptic ON</span>
-      </button>
+        <button class="apple-action-btn" id="btn-sound-toggle" title="Âm thanh phản hồi Apple Taptic">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          <span id="sound-btn-text">Haptic: Bật</span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <!-- Viewport Container -->
-  <main class="app-viewport" id="app-viewport">
-    <div class="device-wrapper" id="device-wrapper">
-      
-      <!-- iOS Status Bar (iPhone Mode) -->
-      <div class="ios-status-bar">
-        <div class="status-time" id="status-time">9:41</div>
-        <div class="status-icons">
-          <!-- Cellular -->
-          <svg viewBox="0 0 24 24"><path d="M2 17h3v4H2v-4zm6-5h3v9H8v-9zm6-6h3v15h-3V6zm6-4h3v19h-3V2z"/></svg>
-          <!-- Wifi -->
-          <svg viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0 0 12 4zm0 4c3.31 0 6.32 1.34 8.5 3.51L12 19.82 3.5 11.51C5.68 9.34 8.69 8 12 8z"/></svg>
-          <!-- Battery -->
-          <svg viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+  <!-- Main Presentation Container -->
+  <main class="dashboard-container">
+
+    <!-- Top Full-Width Hero: Apple Storage Memory Bar -->
+    <section class="apple-card">
+      <div class="card-header-row">
+        <div class="card-title-group">
+          <div class="card-icon-badge" style="background: linear-gradient(135deg, var(--apple-blue), var(--apple-indigo));">
+            💾
+          </div>
+          <div>
+            <div class="card-title">Bản đồ Bộ nhớ Heap (Apple System Storage Visualizer)</div>
+            <div class="card-subtitle">Trực quan hóa phân bố khối nhớ vật lý theo chuẩn màu sắc Apple Human Interface Guidelines</div>
+          </div>
+        </div>
+        <div style="font-size: 13px; color: var(--ios-text-secondary);">
+          Dung lượng Heap: <strong id="lbl-heap-capacity" style="color: var(--ios-text-primary);">1024 KB</strong>
         </div>
       </div>
 
-      <!-- Dynamic Island with Interactive Notification -->
-      <div class="dynamic-island-container">
-        <div class="dynamic-island" id="dynamic-island">
-          <div class="di-left">
-            <div class="di-pill-badge" id="di-badge">✓</div>
-            <span id="di-text">Heap Ready (1024 KB)</span>
+      <div class="storage-overview-grid">
+        <div class="storage-big-stat">
+          <span class="label">Đang sử dụng</span>
+          <span class="value" id="disp-used-memory" style="color: var(--apple-blue);">0 <small>/ 1024 KB</small></span>
+        </div>
+
+        <div>
+          <!-- Storage Bar Track -->
+          <div class="apple-storage-bar-track" id="storage-bar-track">
+            <!-- Dynamically populated memory block segments -->
           </div>
-          <div class="di-right">
-            <div class="di-waveform">
-              <div class="di-wave-bar"></div>
-              <div class="di-wave-bar"></div>
-              <div class="di-wave-bar"></div>
-            </div>
-            <span id="di-algo">FF</span>
-          </div>
+        </div>
+
+        <div class="storage-big-stat" style="text-align: right;">
+          <span class="label">Bộ nhớ trống</span>
+          <span class="value" id="disp-free-memory" style="color: var(--apple-green);">1024 <small>KB</small></span>
         </div>
       </div>
 
-      <!-- Main Scrollable Content -->
-      <div class="ios-scroll-content">
+      <!-- Process Color Legend -->
+      <div class="storage-legend-container" id="storage-legend">
+        <!-- Dynamically rendered process tags -->
+      </div>
+    </section>
+
+    <!-- 3-Column Desktop Dashboard -->
+    <div class="desktop-dashboard-grid">
+
+      <!-- Column 1: Cupertino Control Panel -->
+      <div style="display: flex; flex-direction: column; gap: 20px;">
         
-        <!-- Left / Primary Column -->
-        <div style="display: flex; flex-direction: column; gap: 16px;">
-
-          <!-- iPhone Storage Memory Visualization Card -->
-          <section class="ios-section">
-            <div class="ios-section-header">
-              <span>iPhone Memory Heap</span>
-              <span id="lbl-utilization" style="color: var(--apple-blue); font-weight: 600;">0% Used</span>
-            </div>
-
-            <div class="ios-card">
-              <div class="storage-header">
-                <div>
-                  <div class="storage-title">Heap Space</div>
-                  <div class="storage-value" id="disp-total-usage">0 <small id="disp-total-cap">/ 1024 KB</small></div>
-                </div>
-                <div style="text-align: right;">
-                  <div class="storage-title">Free Space</div>
-                  <div style="font-size: 17px; font-weight: 600; color: var(--apple-green);" id="disp-free-cap">1024 KB</div>
-                </div>
-              </div>
-
-              <!-- Storage Bar Track -->
-              <div class="iphone-storage-track" id="storage-track">
-                <!-- Dynamically populated memory block segments -->
-              </div>
-
-              <!-- Legend -->
-              <div class="storage-legend-grid" id="storage-legend">
-                <!-- Dynamically populated legend items -->
+        <!-- Algorithm Selection Card -->
+        <section class="apple-card">
+          <div class="card-header-row">
+            <div class="card-title-group">
+              <div class="card-icon-badge" style="background: var(--apple-indigo);">⚙</div>
+              <div>
+                <div class="card-title">Thuật toán Cấp phát</div>
+                <div class="card-subtitle">Segmented Control</div>
               </div>
             </div>
-          </section>
+          </div>
 
-          <!-- Cupertino Segmented Control (Algorithm Selection) -->
-          <section class="ios-section">
-            <div class="ios-section-header">
-              <span>Allocation Strategy</span>
-              <span id="algo-rule-hint" style="text-transform: none; font-size: 11px;">Find first fit</span>
+          <div class="segmented-control" id="algo-segmented-control">
+            <button class="segment-tab-btn active" data-algo="first-fit">First Fit</button>
+            <button class="segment-tab-btn" data-algo="next-fit">Next Fit</button>
+            <button class="segment-tab-btn" data-algo="best-fit">Best Fit</button>
+            <button class="segment-tab-btn" data-algo="worst-fit">Worst Fit</button>
+          </div>
+
+          <div class="algo-description-box" id="algo-desc-box">
+            <span>ℹ️</span>
+            <div>
+              <strong id="algo-title-text">First Fit</strong>: <span id="algo-explain-text">Duyệt từ đầu danh sách, cấp phát ngay tại khối trống đầu tiên đủ lớn. Tốc độ tìm kiếm nhanh nhất.</span>
             </div>
+          </div>
+        </section>
 
-            <div class="segmented-control" id="algo-segmented-control">
-              <button class="segment-tab active" data-algo="first-fit">First Fit</button>
-              <button class="segment-tab" data-algo="next-fit">Next Fit</button>
-              <button class="segment-tab" data-algo="best-fit">Best Fit</button>
-              <button class="segment-tab" data-algo="worst-fit">Worst Fit</button>
-            </div>
-          </section>
-
-          <!-- iOS Grouped Form: Allocate & Free -->
-          <section class="ios-section">
-            <div class="ios-section-header">
-              <span>Memory Operations</span>
-            </div>
-
-            <div class="ios-card">
-              <div class="ios-input-group">
-                <input type="text" class="ios-input" id="input-pid" placeholder="Process ID (vd: P1)" value="P1" maxlength="10">
-                <input type="number" class="ios-input" id="input-size" placeholder="Size (KB)" value="128" min="1" max="8192">
-                <button class="ios-btn btn-primary" id="btn-allocate">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                  <span>Alloc</span>
-                </button>
-              </div>
-
-              <div class="preset-chips">
-                <span style="font-size: 11px; color: var(--ios-text-secondary); align-self: center;">Quick:</span>
-                <button class="chip-btn" onclick="quickAlloc(64)">+64 KB</button>
-                <button class="chip-btn" onclick="quickAlloc(128)">+128 KB</button>
-                <button class="chip-btn" onclick="quickAlloc(256)">+256 KB</button>
-                <button class="chip-btn" onclick="quickAlloc(512)">+512 KB</button>
-              </div>
-
-              <div style="display: flex; gap: 8px; margin-top: 4px;">
-                <button class="ios-btn btn-secondary" style="flex: 1;" id="btn-free-selected">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                  <span>Free PID</span>
-                </button>
-                <button class="ios-btn btn-destructive" id="btn-reset-heap">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-                  <span>Reset</span>
-                </button>
+        <!-- Memory Operations Card -->
+        <section class="apple-card">
+          <div class="card-header-row">
+            <div class="card-title-group">
+              <div class="card-icon-badge" style="background: var(--apple-blue);">➕</div>
+              <div>
+                <div class="card-title">Thao tác Bộ nhớ</div>
+                <div class="card-subtitle">Allocate & Free Blocks</div>
               </div>
             </div>
-          </section>
+          </div>
 
-          <!-- Interactive Simulation Scenarios -->
-          <section class="ios-section">
-            <div class="ios-section-header">
-              <span>Automated Scenarios</span>
-              <span id="sim-status-label" style="color: var(--apple-green);">Idle</span>
-            </div>
+          <div class="apple-input-row">
+            <input type="text" class="apple-input" id="input-pid" placeholder="Process ID (vd: P1)" value="P1" maxlength="12">
+            <input type="number" class="apple-input" id="input-size" placeholder="Size (KB)" value="128" min="1" max="8192">
+            <button class="apple-btn btn-blue" id="btn-allocate">
+              <span>Cấp phát</span>
+            </button>
+          </div>
 
-            <div class="ios-card">
-              <div style="display: flex; gap: 8px;">
-                <button class="ios-btn btn-secondary" style="flex: 1;" onclick="loadScenario('random')">
-                  🎲 Random Mix
-                </button>
-                <button class="ios-btn btn-secondary" style="flex: 1;" onclick="loadScenario('worst')">
-                  ⚡ Worst-Case
-                </button>
-                <button class="ios-btn btn-secondary" style="flex: 1;" onclick="loadScenario('web')">
-                  🌐 Web Server
-                </button>
-              </div>
+          <div class="preset-pills-row">
+            <span style="font-size: 12px; color: var(--ios-text-secondary); align-self: center; margin-right: 2px;">Cỡ mẫu:</span>
+            <button class="preset-pill-btn" onclick="quickAlloc(64)">+64 KB</button>
+            <button class="preset-pill-btn" onclick="quickAlloc(128)">+128 KB</button>
+            <button class="preset-pill-btn" onclick="quickAlloc(256)">+256 KB</button>
+            <button class="preset-pill-btn" onclick="quickAlloc(512)">+512 KB</button>
+          </div>
 
-              <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 6px;">
-                <div style="display: flex; gap: 8px;">
-                  <button class="ios-btn btn-primary" id="btn-play-pause" onclick="toggleAutoPlay()">
-                    <span id="play-btn-text">▶ Auto Play</span>
-                  </button>
-                  <button class="ios-btn btn-secondary" onclick="stepScenario()">
-                    ⏭ Step
-                  </button>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ios-text-secondary);">
-                  <span>Speed:</span>
-                  <input type="range" id="speed-slider" min="50" max="600" value="250" style="accent-color: var(--apple-blue); width: 80px;">
-                </div>
-              </div>
-            </div>
-          </section>
+          <div style="display: flex; gap: 10px;">
+            <button class="apple-btn btn-secondary" style="flex: 1;" id="btn-free-selected">
+              <span>Giải phóng PID</span>
+            </button>
+            <button class="apple-btn btn-red" id="btn-reset-heap">
+              <span>Reset Heap</span>
+            </button>
+          </div>
+        </section>
 
-        </div>
-
-        <!-- Right / Secondary Column (Diagnostics, Activity Rings, Benchmark) -->
-        <div style="display: flex; flex-direction: column; gap: 16px;">
-
-          <!-- iOS Activity Diagnostics -->
-          <section class="ios-section">
-            <div class="ios-section-header">
-              <span>System Diagnostics</span>
-              <span style="font-size: 11px; color: var(--ios-text-secondary);">Real-time</span>
-            </div>
-
-            <div class="metrics-grid">
-              <div class="metric-card">
-                <div class="metric-title">
-                  <span>Fragmentation</span>
-                  <span style="color: var(--apple-purple);">●</span>
-                </div>
-                <div class="metric-number" id="diag-frag">0.0%</div>
-                <div class="metric-subtitle" id="diag-frag-severity">Optimal (Low)</div>
-              </div>
-
-              <div class="metric-card">
-                <div class="metric-title">
-                  <span>Success Rate</span>
-                  <span style="color: var(--apple-green);">●</span>
-                </div>
-                <div class="metric-number" id="diag-success">100%</div>
-                <div class="metric-subtitle" id="diag-alloc-ratio">0/0 allocs</div>
-              </div>
-
-              <div class="metric-card">
-                <div class="metric-title">
-                  <span>Largest Free</span>
-                  <span style="color: var(--apple-blue);">●</span>
-                </div>
-                <div class="metric-number" id="diag-largest-free">1024</div>
-                <div class="metric-subtitle">KB continuous</div>
-              </div>
-
-              <div class="metric-card">
-                <div class="metric-title">
-                  <span>Total Blocks</span>
-                  <span style="color: var(--apple-orange);">●</span>
-                </div>
-                <div class="metric-number" id="diag-block-count">1</div>
-                <div class="metric-subtitle" id="diag-block-split">0 used, 1 free</div>
+        <!-- Total Heap Config Card -->
+        <section class="apple-card">
+          <div class="card-header-row" style="margin-bottom: 8px;">
+            <div class="card-title-group">
+              <div class="card-icon-badge" style="background: var(--apple-gray);">📏</div>
+              <div>
+                <div class="card-title">Cấu hình Dung lượng Heap</div>
+                <div class="card-subtitle">Set Total Memory Size</div>
               </div>
             </div>
-          </section>
+          </div>
 
-          <!-- Active Blocks Inset Table -->
-          <section class="ios-section">
-            <div class="ios-section-header">
-              <span>Memory Blocks (Doubly-Linked List)</span>
-              <span id="lbl-block-summary" style="font-size: 11px;">1 Node</span>
-            </div>
-
-            <div class="ios-card" style="padding: 10px;">
-              <div class="block-list" id="block-list-container">
-                <!-- Dynamically rendered list of blocks -->
-              </div>
-            </div>
-          </section>
-
-          <!-- Benchmark Comparison Hub (Phase 3 Results) -->
-          <section class="ios-section">
-            <div class="ios-section-header">
-              <span>Phase 3 Benchmark Comparison</span>
-              <span class="badge-trophy">🏆 Best Fit Wins</span>
-            </div>
-
-            <div class="ios-card">
-              <table class="benchmark-table">
-                <thead>
-                  <tr>
-                    <th>Algorithm</th>
-                    <th>Success</th>
-                    <th>Speed</th>
-                    <th>Frag %</th>
-                  </tr>
-                </thead>
-                <tbody id="benchmark-tbody">
-                  <tr>
-                    <td><strong>First Fit</strong></td>
-                    <td>71.59%</td>
-                    <td>0.00015 ms</td>
-                    <td>85.4%</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Next Fit</strong></td>
-                    <td>71.43%</td>
-                    <td><span class="badge-trophy">0.00009 ms ⚡</span></td>
-                    <td>83.3%</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Best Fit</strong></td>
-                    <td><span class="badge-trophy">72.74% 🏆</span></td>
-                    <td>0.00039 ms</td>
-                    <td>81.2%</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Worst Fit</strong></td>
-                    <td>68.90%</td>
-                    <td>0.00042 ms</td>
-                    <td>88.7%</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div style="display: flex; gap: 8px; margin-top: 6px;">
-                <button class="ios-btn btn-secondary" style="flex: 1; font-size: 13px;" onclick="exportStateJSON()">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                  <span>Export JSON</span>
-                </button>
-                <button class="ios-btn btn-secondary" style="flex: 1; font-size: 13px;" onclick="importStateJSON()">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
-                  <span>Import JSON</span>
-                </button>
-                <input type="file" id="json-file-input" style="display: none;" accept=".json">
-              </div>
-            </div>
-          </section>
-
-        </div>
+          <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <button class="apple-btn btn-secondary" style="flex: 1; font-size: 13px;" onclick="setHeapCapacity(1024)">1024 KB</button>
+            <button class="apple-btn btn-secondary" style="flex: 1; font-size: 13px;" onclick="setHeapCapacity(2048)">2048 KB</button>
+            <button class="apple-btn btn-secondary" style="flex: 1; font-size: 13px;" onclick="setHeapCapacity(4096)">4096 KB</button>
+          </div>
+        </section>
 
       </div>
 
-      <!-- iPhone Home Indicator -->
-      <div class="ios-home-indicator"></div>
+      <!-- Column 2: Simulation Studio & Real-time Console -->
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        
+        <!-- Automated Scenarios Card -->
+        <section class="apple-card">
+          <div class="card-header-row">
+            <div class="card-title-group">
+              <div class="card-icon-badge" style="background: var(--apple-orange);">⚡</div>
+              <div>
+                <div class="card-title">Mô phỏng Kịch bản Tự động</div>
+                <div class="card-subtitle">Chạy tự động các mẫu tải thực tế của Hệ Điều Hành</div>
+              </div>
+            </div>
+            <div id="sim-status-badge" class="theme-badge" style="background: rgba(52, 199, 89, 0.12); color: var(--apple-green);">
+              Sẵn sàng
+            </div>
+          </div>
+
+          <div class="scenarios-grid">
+            <button class="scenario-select-btn" onclick="loadScenario('random')">
+              <span class="icon">🎲</span>
+              <span>Random Mix</span>
+              <span style="font-size: 10px; color: var(--ios-text-secondary); font-weight: normal;">30 tác vụ ngẫu nhiên</span>
+            </button>
+            <button class="scenario-select-btn" onclick="loadScenario('worst')">
+              <span class="icon">💥</span>
+              <span>Worst-Case Frag</span>
+              <span style="font-size: 10px; color: var(--ios-text-secondary); font-weight: normal;">Gây phân đoạn tối đa</span>
+            </button>
+            <button class="scenario-select-btn" onclick="loadScenario('web')">
+              <span class="icon">🌐</span>
+              <span>Web Server</span>
+              <span style="font-size: 10px; color: var(--ios-text-secondary); font-weight: normal;">Requests & Cache</span>
+            </button>
+          </div>
+
+          <div class="playback-controls">
+            <div style="display: flex; gap: 10px;">
+              <button class="apple-btn btn-blue" id="btn-play-pause" onclick="toggleAutoPlay()">
+                <span id="play-btn-label">▶ Tự động chạy</span>
+              </button>
+              <button class="apple-btn btn-secondary" onclick="stepScenario()">
+                <span>⏭ Bước tiếp (Step)</span>
+              </button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ios-text-secondary);">
+              <span>Tốc độ:</span>
+              <input type="range" id="speed-slider" min="50" max="600" value="200" style="accent-color: var(--apple-blue); width: 100px; cursor: pointer;">
+            </div>
+          </div>
+        </section>
+
+        <!-- System Diagnostics (Apple Activity Cards) -->
+        <section class="apple-card">
+          <div class="card-header-row">
+            <div class="card-title-group">
+              <div class="card-icon-badge" style="background: var(--apple-pink);">📊</div>
+              <div>
+                <div class="card-title">Chỉ số Hiệu năng & Phân đoạn</div>
+                <div class="card-subtitle">Real-time Memory Diagnostics</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="metrics-dashboard-grid">
+            <div class="metric-apple-card frag">
+              <div class="metric-label">Phân đoạn ngoại (Frag %)</div>
+              <div class="metric-val" id="diag-frag-val" style="color: var(--apple-purple);">0.0%</div>
+              <div class="metric-footnote" id="diag-frag-status">Mức độ: Tối ưu (Thấp)</div>
+            </div>
+
+            <div class="metric-apple-card success">
+              <div class="metric-label">Tỷ lệ cấp phát thành công</div>
+              <div class="metric-val" id="diag-success-val" style="color: var(--apple-green);">100%</div>
+              <div class="metric-footnote" id="diag-success-ratio">0 / 0 lần thử</div>
+            </div>
+
+            <div class="metric-apple-card largest">
+              <div class="metric-label">Khối trống lớn nhất</div>
+              <div class="metric-val" id="diag-largest-val" style="color: var(--apple-blue);">1024 <small style="font-size: 14px;">KB</small></div>
+              <div class="metric-footnote">Liên tục không bị ngắt quãng</div>
+            </div>
+
+            <div class="metric-apple-card blocks">
+              <div class="metric-label">Tổng số khối (Nodes)</div>
+              <div class="metric-val" id="diag-block-val" style="color: var(--apple-orange);">1</div>
+              <div class="metric-footnote" id="diag-block-split">0 đã cấp, 1 trống</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- JSON & HTML Data Hub -->
+        <section class="apple-card" style="padding: 16px 20px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+            <div>
+              <div style="font-size: 14px; font-weight: 700;">Đồng bộ Dữ liệu C / JSON</div>
+              <div style="font-size: 12px; color: var(--ios-text-secondary);">Tương thích hoàn toàn với file output của bản build C (memory_allocator)</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="apple-btn btn-secondary" style="font-size: 13px;" onclick="exportStateJSON()">
+                <span>⬇ Xuất JSON</span>
+              </button>
+              <button class="apple-btn btn-secondary" style="font-size: 13px;" onclick="importStateJSON()">
+                <span>⬆ Nhập JSON</span>
+              </button>
+              <input type="file" id="json-file-input" style="display: none;" accept=".json">
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Column 3: Doubly-Linked List Node Map -->
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        
+        <section class="apple-card">
+          <div class="card-header-row">
+            <div class="card-title-group">
+              <div class="card-icon-badge" style="background: var(--apple-teal);">🔗</div>
+              <div>
+                <div class="card-title">Danh sách Liên kết Đôi (DLL)</div>
+                <div class="card-subtitle" id="dll-node-summary">1 Node trong Heap</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dll-container" id="dll-container">
+            <!-- Dynamically populated DLL nodes -->
+          </div>
+        </section>
+
+      </div>
 
     </div>
+
+    <!-- Bottom Full-Width Section: Phase 3 Benchmark Comparison -->
+    <section class="apple-card">
+      <div class="card-header-row">
+        <div class="card-title-group">
+          <div class="card-icon-badge" style="background: linear-gradient(135deg, var(--apple-yellow), var(--apple-orange));">🏆</div>
+          <div>
+            <div class="card-title">Bảng So sánh Benchmark Toàn diện (Phase 3 Results)</div>
+            <div class="card-subtitle">Số liệu đo lường thực tế từ 1000 lượt cấp phát ngẫu nhiên trên Heap 10000 bytes</div>
+          </div>
+        </div>
+        <div>
+          <span class="trophy-badge">🏆 Best Fit: Ít Phân đoạn nhất (81.2%) & Tỷ lệ thành công cao nhất (72.7%)</span>
+        </div>
+      </div>
+
+      <div class="benchmark-table-wrapper">
+        <table class="benchmark-desktop-table">
+          <thead>
+            <tr>
+              <th>Thuật toán</th>
+              <th>Cấp phát Thành công</th>
+              <th>Tốc độ Trung bình (ms)</th>
+              <th>Thất bại</th>
+              <th>Đỉnh RAM (Bytes)</th>
+              <th>Phân đoạn Ngoại (%)</th>
+              <th>Đánh giá Chuyên môn</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong style="color: var(--apple-blue);">First Fit</strong></td>
+              <td>436 / 609 (71.59%)</td>
+              <td>0.000155 ms</td>
+              <td>173</td>
+              <td>9,552</td>
+              <td>85.43%</td>
+              <td>Cân bằng tốt giữa tốc độ và độ tin cậy.</td>
+            </tr>
+            <tr>
+              <td><strong style="color: var(--apple-green);">Next Fit</strong></td>
+              <td>435 / 609 (71.43%)</td>
+              <td><span class="trophy-badge">0.000095 ms ⚡ Nhanh nhất</span></td>
+              <td>174</td>
+              <td>9,166</td>
+              <td>83.32%</td>
+              <td>Tốc độ vượt trội nhờ con trỏ nhớ vòng tròn.</td>
+            </tr>
+            <tr>
+              <td><strong style="color: var(--apple-indigo);">Best Fit</strong></td>
+              <td><span class="trophy-badge">443 / 609 (72.74%) 🏆 Cao nhất</span></td>
+              <td>0.000397 ms</td>
+              <td>166</td>
+              <td>9,410</td>
+              <td><span class="trophy-badge">81.20% 🏆 Ít vụn nhất</span></td>
+              <td>Tận dụng tối đa bộ nhớ, ít bị phân đoạn nhất.</td>
+            </tr>
+            <tr>
+              <td><strong style="color: var(--apple-orange);">Worst Fit</strong></td>
+              <td>419 / 609 (68.90%)</td>
+              <td>0.000421 ms</td>
+              <td>190</td>
+              <td>9,840</td>
+              <td>88.70%</td>
+              <td>Tạo nhiều phân đoạn vụn lớn, hiệu quả thấp nhất.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
   </main>
 
-  <!-- Interactive Callout Popover -->
-  <div class="ios-callout-popover" id="callout-popover"></div>
+  <!-- Interactive Floating Popover Tooltip -->
+  <div class="apple-popover" id="callout-popover"></div>
 
   <!-- Audio Synthesis & Core Simulation Script -->
   <script>
     /* ==========================================================
-       1. APPLE HAPTIC AUDIO SYNTHESIZER (Web Audio API)
+       1. APPLE AUDIO SYNTHESIZER (Web Audio API)
        ========================================================== */
-    class AppleHaptics {
+    class AppleAudioFeedback {
       constructor() {
         this.ctx = null;
         this.enabled = true;
@@ -1208,14 +1225,14 @@
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(580, this.ctx.currentTime);
+        osc.frequency.setValueAtTime(560, this.ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.08);
-        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.09);
+        gain.gain.setValueAtTime(0.09, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start();
-        osc.stop(this.ctx.currentTime + 0.09);
+        osc.stop(this.ctx.currentTime + 0.08);
       }
       playWarning() {
         if (!this.enabled) return;
@@ -1225,20 +1242,20 @@
         const gain = this.ctx.createGain();
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(220, this.ctx.currentTime);
-        gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start();
-        osc.stop(this.ctx.currentTime + 0.15);
+        osc.stop(this.ctx.currentTime + 0.12);
       }
     }
-    const haptics = new AppleHaptics();
+    const haptics = new AppleAudioFeedback();
 
     /* ==========================================================
-       2. HEAP MANAGER CORE ENGINE (Mirroring C Implementation)
+       2. APPLE HIG PROCESS COLOR PALETTE
        ========================================================== */
-    const APPLE_PROCESS_PALETTE = [
+    const APPLE_SYSTEM_PALETTE = [
       '#007AFF', // System Blue
       '#5856D6', // System Indigo
       '#AF52DE', // System Purple
@@ -1250,23 +1267,26 @@
       '#5AC8FA'  // System Sky
     ];
 
+    function hashColor(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+      }
+      return APPLE_SYSTEM_PALETTE[Math.abs(hash) % APPLE_SYSTEM_PALETTE.length];
+    }
+
+    /* ==========================================================
+       3. HEAP MANAGER CORE ENGINE (C POSIX DLL Replication)
+       ========================================================== */
     class MemoryBlock {
       constructor(start, size, isFree = true, pid = null) {
         this.start = start;
         this.size = size;
         this.isFree = isFree;
         this.pid = pid;
-        this.color = isFree ? null : APPLE_PROCESS_PALETTE[Math.abs(hashCode(pid || '')) % APPLE_PROCESS_PALETTE.length];
+        this.color = isFree ? null : hashColor(pid || '');
       }
-    }
-
-    function hashCode(str) {
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        hash = (hash << 5) - hash + str.charCodeAt(i);
-        hash |= 0;
-      }
-      return hash;
     }
 
     class HeapManager {
@@ -1274,7 +1294,7 @@
         this.totalSize = totalSize;
         this.blocks = [new MemoryBlock(0, totalSize, true, null)];
         this.algorithm = 'first-fit';
-        this.lastAllocatedIndex = 0; // For Next Fit
+        this.lastAllocatedIndex = 0;
         this.allocationCount = 0;
         this.failedAllocationCount = 0;
         this.deallocationCount = 0;
@@ -1309,7 +1329,6 @@
         return ((freeSize - largest) / freeSize) * 100;
       }
 
-      /* 4 Core Allocation Algorithms */
       findBlock(size) {
         if (this.algorithm === 'first-fit') {
           return this.blocks.findIndex(b => b.isFree && b.size >= size);
@@ -1365,7 +1384,7 @@
         if (target.size === size) {
           target.isFree = false;
           target.pid = pid;
-          target.color = APPLE_PROCESS_PALETTE[Math.abs(hashCode(pid)) % APPLE_PROCESS_PALETTE.length];
+          target.color = hashColor(pid);
         } else {
           /* Block Splitting */
           const allocatedBlock = new MemoryBlock(target.start, size, false, pid);
@@ -1407,7 +1426,6 @@
         return false;
       }
 
-      /* Coalescing adjacent free blocks */
       coalesce() {
         const merged = [];
         for (let i = 0; i < this.blocks.length; i++) {
@@ -1428,55 +1446,41 @@
     const heap = new HeapManager(1024);
 
     /* ==========================================================
-       3. UI RENDERING & EVENT HANDLERS
+       4. UI REFERENCES & RENDERING
        ========================================================== */
     const dom = {
-      deviceWrapper: document.getElementById('device-wrapper'),
-      appViewport: document.getElementById('app-viewport'),
-      storageTrack: document.getElementById('storage-track'),
+      storageBarTrack: document.getElementById('storage-bar-track'),
       storageLegend: document.getElementById('storage-legend'),
-      dispTotalUsage: document.getElementById('disp-total-usage'),
-      dispTotalCap: document.getElementById('disp-total-cap'),
-      dispFreeCap: document.getElementById('disp-free-cap'),
-      lblUtilization: document.getElementById('lbl-utilization'),
-      diagFrag: document.getElementById('diag-frag'),
-      diagFragSeverity: document.getElementById('diag-frag-severity'),
-      diagSuccess: document.getElementById('diag-success'),
-      diagAllocRatio: document.getElementById('diag-alloc-ratio'),
-      diagLargestFree: document.getElementById('diag-largest-free'),
-      diagBlockCount: document.getElementById('diag-block-count'),
+      dispUsedMemory: document.getElementById('disp-used-memory'),
+      dispFreeMemory: document.getElementById('disp-free-memory'),
+      lblHeapCapacity: document.getElementById('lbl-heap-capacity'),
+      hdrCurrentAlgo: document.getElementById('hdr-current-algo'),
+      hdrUsageRatio: document.getElementById('hdr-usage-ratio'),
+      diagFragVal: document.getElementById('diag-frag-val'),
+      diagFragStatus: document.getElementById('diag-frag-status'),
+      diagSuccessVal: document.getElementById('diag-success-val'),
+      diagSuccessRatio: document.getElementById('diag-success-ratio'),
+      diagLargestVal: document.getElementById('diag-largest-val'),
+      diagBlockVal: document.getElementById('diag-block-val'),
       diagBlockSplit: document.getElementById('diag-block-split'),
-      blockListContainer: document.getElementById('block-list-container'),
-      lblBlockSummary: document.getElementById('lbl-block-summary'),
+      dllContainer: document.getElementById('dll-container'),
+      dllNodeSummary: document.getElementById('dll-node-summary'),
       calloutPopover: document.getElementById('callout-popover'),
-      dynamicIsland: document.getElementById('dynamic-island'),
-      diBadge: document.getElementById('di-badge'),
-      diText: document.getElementById('di-text'),
-      diAlgo: document.getElementById('di-algo'),
       inputPid: document.getElementById('input-pid'),
       inputSize: document.getElementById('input-size'),
       btnAllocate: document.getElementById('btn-allocate'),
       btnFreeSelected: document.getElementById('btn-free-selected'),
       btnResetHeap: document.getElementById('btn-reset-heap'),
-      btnDeviceToggle: document.getElementById('btn-device-toggle'),
       btnThemeToggle: document.getElementById('btn-theme-toggle'),
-      themeLabel: document.getElementById('theme-label'),
+      themeBtnText: document.getElementById('theme-btn-text'),
       btnSoundToggle: document.getElementById('btn-sound-toggle'),
-      soundLabel: document.getElementById('sound-label'),
-      algoTabs: document.querySelectorAll('#algo-segmented-control .segment-tab'),
-      algoRuleHint: document.getElementById('algo-rule-hint'),
+      soundBtnText: document.getElementById('sound-btn-text'),
+      algoTabs: document.querySelectorAll('#algo-segmented-control .segment-tab-btn'),
+      algoTitleText: document.getElementById('algo-title-text'),
+      algoExplainText: document.getElementById('algo-explain-text'),
+      simStatusBadge: document.getElementById('sim-status-badge'),
       jsonFileInput: document.getElementById('json-file-input')
     };
-
-    function triggerDynamicIsland(text, badge = '✓', badgeBg = '#34C759') {
-      dom.diBadge.textContent = badge;
-      dom.diBadge.style.backgroundColor = badgeBg;
-      dom.diText.textContent = text;
-      dom.dynamicIsland.classList.add('expanded');
-      setTimeout(() => {
-        dom.dynamicIsland.classList.remove('expanded');
-      }, 1800);
-    }
 
     function renderUI() {
       const usedSize = heap.getUsedSize();
@@ -1485,20 +1489,21 @@
       const fragPercent = heap.getFragmentation().toFixed(1);
       const largestFree = heap.getLargestFreeBlock();
 
-      dom.dispTotalUsage.innerHTML = `${usedSize} <small id="disp-total-cap">/ ${heap.totalSize} KB</small>`;
-      dom.dispFreeCap.textContent = `${freeSize} KB`;
-      dom.lblUtilization.textContent = `${utilPercent}% Used`;
+      dom.lblHeapCapacity.textContent = `${heap.totalSize} KB`;
+      dom.dispUsedMemory.innerHTML = `${usedSize} <small>/ ${heap.totalSize} KB (${utilPercent}%)</small>`;
+      dom.dispFreeMemory.innerHTML = `${freeSize} <small>KB</small>`;
+      dom.hdrUsageRatio.textContent = `${usedSize} / ${heap.totalSize} KB (${utilPercent}%)`;
 
-      // Storage Track Render
-      dom.storageTrack.innerHTML = '';
+      // Storage Bar Track
+      dom.storageBarTrack.innerHTML = '';
       const uniqueProcesses = new Map();
 
       heap.blocks.forEach((block, idx) => {
         const seg = document.createElement('div');
-        seg.className = `storage-segment ${block.isFree ? 'free-block' : 'alloc-block'}`;
+        seg.className = `storage-block-segment ${block.isFree ? 'free-block' : 'alloc-block'}`;
         const pctWidth = (block.size / heap.totalSize) * 100;
         seg.style.width = `${pctWidth}%`;
-        
+
         if (!block.isFree) {
           seg.style.backgroundColor = block.color;
           if (!uniqueProcesses.has(block.pid)) {
@@ -1508,7 +1513,7 @@
           }
         }
 
-        // Hover & Popover
+        // Hover Popover
         seg.addEventListener('mouseenter', (e) => {
           showPopover(e, block);
         });
@@ -1517,93 +1522,97 @@
         });
         seg.addEventListener('mouseleave', hidePopover);
 
-        // Tap to Free
+        // Click to Free
         seg.addEventListener('click', () => {
           if (!block.isFree) {
             haptics.playTap();
-            const pid = block.pid;
             heap.freeBlockByIndex(idx);
-            triggerDynamicIsland(`Freed ${pid} (${block.size} KB)`, '🗑', '#FF3B30');
             renderUI();
           }
         });
 
-        dom.storageTrack.appendChild(seg);
+        dom.storageBarTrack.appendChild(seg);
       });
 
       // Storage Legend
       dom.storageLegend.innerHTML = '';
       uniqueProcesses.forEach((data, pid) => {
         const item = document.createElement('div');
-        item.className = 'legend-item';
-        item.innerHTML = `<span class="legend-dot" style="background: ${data.color}"></span><span>${pid} (${data.size} KB)</span>`;
+        item.className = 'legend-item-pill';
+        item.innerHTML = `<span class="legend-color-dot" style="background: ${data.color}"></span><span><strong>${pid}</strong>: ${data.size} KB</span>`;
         dom.storageLegend.appendChild(item);
       });
 
       const freeLegend = document.createElement('div');
-      freeLegend.className = 'legend-item';
-      freeLegend.innerHTML = `<span class="legend-dot" style="background: #8E8E93"></span><span>Trống (${freeSize} KB)</span>`;
+      freeLegend.className = 'legend-item-pill';
+      freeLegend.innerHTML = `<span class="legend-color-dot" style="background: #8E8E93"></span><span><strong>Vùng trống:</strong> ${freeSize} KB</span>`;
       dom.storageLegend.appendChild(freeLegend);
 
-      // Diagnostics Card
-      dom.diagFrag.textContent = `${fragPercent}%`;
-      dom.diagFragSeverity.textContent = fragPercent < 15 ? 'Optimal (Low)' : (fragPercent < 35 ? 'Moderate' : 'High Fragmented');
-      dom.diagFragSeverity.style.color = fragPercent < 15 ? 'var(--apple-green)' : (fragPercent < 35 ? 'var(--apple-orange)' : 'var(--apple-red)');
+      // Diagnostics Cards
+      dom.diagFragVal.textContent = `${fragPercent}%`;
+      const fragSeverity = fragPercent < 15 ? 'Mức độ: Tối ưu (Thấp)' : (fragPercent < 35 ? 'Mức độ: Trung bình' : 'Mức độ: Phân đoạn Nặng');
+      dom.diagFragStatus.textContent = fragSeverity;
+      dom.diagFragVal.style.color = fragPercent < 15 ? 'var(--apple-green)' : (fragPercent < 35 ? 'var(--apple-orange)' : 'var(--apple-red)');
 
       const totalAttempts = heap.allocationCount + heap.failedAllocationCount;
       const successRate = totalAttempts > 0 ? ((heap.allocationCount / totalAttempts) * 100).toFixed(1) : 100;
-      dom.diagSuccess.textContent = `${successRate}%`;
-      dom.diagAllocRatio.textContent = `${heap.allocationCount}/${totalAttempts} allocs`;
+      dom.diagSuccessVal.textContent = `${successRate}%`;
+      dom.diagSuccessRatio.textContent = `${heap.allocationCount} thành công / ${totalAttempts} lần thử`;
 
-      dom.diagLargestFree.textContent = largestFree;
-      dom.diagBlockCount.textContent = heap.blocks.length;
+      dom.diagLargestVal.innerHTML = `${largestFree} <small style="font-size: 14px;">KB</small>`;
+      dom.diagBlockVal.textContent = heap.blocks.length;
 
       const allocCount = heap.blocks.filter(b => !b.isFree).length;
       const freeCount = heap.blocks.filter(b => b.isFree).length;
-      dom.diagBlockSplit.textContent = `${allocCount} used, ${freeCount} free`;
+      dom.diagBlockSplit.textContent = `${allocCount} đã cấp phát, ${freeCount} khối trống`;
 
-      // Block List Items
-      dom.blockListContainer.innerHTML = '';
-      dom.lblBlockSummary.textContent = `${heap.blocks.length} Nodes (DLL)`;
+      // DLL Node List
+      dom.dllContainer.innerHTML = '';
+      dom.dllNodeSummary.textContent = `${heap.blocks.length} Nodes liên kết đôi trong Heap`;
 
       heap.blocks.forEach((block, idx) => {
-        const row = document.createElement('div');
-        row.className = 'block-item';
-        
+        const node = document.createElement('div');
+        node.className = 'dll-node-card';
+
         const badgeColor = block.isFree ? '#8E8E93' : block.color;
         const tagText = block.isFree ? 'FREE' : block.pid;
         const endAddr = block.start + block.size;
 
-        row.innerHTML = `
-          <div class="block-left">
-            <span class="block-tag" style="background: ${badgeColor}">${tagText}</span>
-            <span class="block-range">[${block.start} - ${endAddr}] (${block.size} KB)</span>
+        node.innerHTML = `
+          <div class="dll-node-left">
+            <span class="node-tag" style="background: ${badgeColor}">${tagText}</span>
+            <span class="node-range">[Offset: ${block.start} → ${endAddr}]</span>
+            <span style="font-weight: 600; font-size: 13px;">${block.size} KB</span>
           </div>
-          <div class="block-actions">
-            ${!block.isFree ? `<button class="btn-delete-block" title="Giải phóng block" onclick="freeBlockAt(${idx})">✕</button>` : ''}
+          <div>
+            ${!block.isFree ? `<button class="node-btn-free" onclick="freeBlockAt(${idx})">Giải phóng</button>` : '<span style="font-size: 11.5px; color: var(--ios-text-secondary);">Trống</span>'}
           </div>
         `;
-        dom.blockListContainer.appendChild(row);
+        dom.dllContainer.appendChild(node);
       });
     }
 
     window.freeBlockAt = function(idx) {
       haptics.playTap();
-      const b = heap.blocks[idx];
-      const pid = b.pid;
       heap.freeBlockByIndex(idx);
-      triggerDynamicIsland(`Freed ${pid}`, '✓', '#FF9500');
+      renderUI();
+    };
+
+    window.setHeapCapacity = function(cap) {
+      haptics.playTap();
+      heap.reset(cap);
       renderUI();
     };
 
     /* Popover Tooltip */
     function showPopover(e, block) {
       dom.calloutPopover.style.display = 'block';
-      const statusText = block.isFree ? 'FREE BLOCK' : `ALLOCATED: ${block.pid}`;
+      const statusText = block.isFree ? 'VÙNG NHỚ TRỐNG (FREE)' : `TIẾN TRÌNH: ${block.pid}`;
       dom.calloutPopover.innerHTML = `
-        <strong>${statusText}</strong><br>
-        Offset: <code>${block.start} - ${block.start + block.size} KB</code><br>
-        Size: <code>${block.size} KB</code>
+        <div style="font-weight: 700; color: ${block.isFree ? '#A1A1A6' : '#5AC8FA'}; margin-bottom: 2px;">${statusText}</div>
+        <div>Địa chỉ: <code>${block.start} → ${block.start + block.size} KB</code></div>
+        <div>Kích thước: <strong>${block.size} KB</strong></div>
+        ${!block.isFree ? '<div style="font-size: 11px; color: #FF9500; margin-top: 3px;">Nhấp vào để giải phóng khối này</div>' : ''}
       `;
       updatePopoverPos(e);
     }
@@ -1618,17 +1627,23 @@
     }
 
     /* Algorithm Selection */
-    const algoHints = {
-      'first-fit': 'Tìm block trống đầu tiên đủ kích thước',
-      'next-fit': 'Tiếp tục tìm từ vị trí cấp phát trước',
-      'best-fit': 'Tìm block trống nhỏ nhất đủ kích thước (ít dư nhất)',
-      'worst-fit': 'Tìm block trống lớn nhất (để lại phần dư lớn)'
-    };
-    const algoPillCodes = {
-      'first-fit': 'FF',
-      'next-fit': 'NF',
-      'best-fit': 'BF',
-      'worst-fit': 'WF'
+    const algoExplanations = {
+      'first-fit': {
+        name: 'First Fit',
+        text: 'Duyệt từ đầu danh sách liên kết, chọn khối trống đầu tiên đủ lớn. Tốc độ tìm kiếm nhanh, thường dùng trong hệ thống cần độ phản hồi cao.'
+      },
+      'next-fit': {
+        name: 'Next Fit',
+        text: 'Duyệt tiếp từ vị trí khối vừa được cấp phát trước đó (vòng tròn). Giúp phân bổ đều các khối nhớ trên toàn bộ Heap.'
+      },
+      'best-fit': {
+        name: 'Best Fit',
+        text: 'Duyệt toàn bộ danh sách, chọn khối trống nhỏ nhất vừa đủ chứa dữ liệu. Giảm thiểu phân đoạn và tiết kiệm không gian bộ nhớ nhất.'
+      },
+      'worst-fit': {
+        name: 'Worst Fit',
+        text: 'Duyệt toàn bộ danh sách, chọn khối trống lớn nhất có sẵn (để lại phần dư lớn). Thường gây phân đoạn nặng và làm cạn kiệt khối nhớ lớn.'
+      }
     };
 
     dom.algoTabs.forEach(tab => {
@@ -1638,34 +1653,34 @@
         tab.classList.add('active');
         const algo = tab.dataset.algo;
         heap.algorithm = algo;
-        dom.algoRuleHint.textContent = algoHints[algo] || '';
-        dom.diAlgo.textContent = algoPillCodes[algo] || 'ALGO';
-        triggerDynamicIsland(`Switched to ${tab.textContent}`, '⚙', '#007AFF');
+
+        const info = algoExplanations[algo];
+        dom.algoTitleText.textContent = info.name;
+        dom.algoExplainText.textContent = info.text;
+        dom.hdrCurrentAlgo.textContent = info.name;
       });
     });
 
-    /* Allocation Button */
+    /* Allocate Button */
     dom.btnAllocate.addEventListener('click', () => {
       const pid = (dom.inputPid.value || 'P1').trim();
       const size = parseInt(dom.inputSize.value, 10);
       if (!size || size <= 0) {
         haptics.playWarning();
-        triggerDynamicIsland('Invalid block size', '!', '#FF3B30');
+        alert('Kích thước khối nhớ phải lớn hơn 0 KB.');
         return;
       }
 
       const success = heap.allocate(pid, size);
       if (success) {
         haptics.playSuccess();
-        triggerDynamicIsland(`Allocated ${pid} (${size} KB)`, '✓', '#34C759');
-        // Increment next PID suggestion
         const match = pid.match(/^P(\d+)$/i);
         if (match) {
           dom.inputPid.value = `P${parseInt(match[1], 10) + 1}`;
         }
       } else {
         haptics.playWarning();
-        triggerDynamicIsland(`Failed ${pid}: No fit for ${size} KB`, '✗', '#FF3B30');
+        alert(`Không thể cấp phát cho ${pid} (${size} KB): Không tìm thấy khối trống nào đủ lớn!`);
       }
       renderUI();
     });
@@ -1682,62 +1697,44 @@
       const ok = heap.free(pid);
       if (ok) {
         haptics.playTap();
-        triggerDynamicIsland(`Freed process ${pid}`, '✓', '#FF9500');
       } else {
         haptics.playWarning();
-        triggerDynamicIsland(`PID ${pid} not found`, '!', '#8E8E93');
+        alert(`Không tìm thấy tiến trình ${pid} trong bộ nhớ.`);
       }
       renderUI();
     });
 
-    /* Reset Heap */
+    /* Reset Button */
     dom.btnResetHeap.addEventListener('click', () => {
       haptics.playTap();
-      heap.reset(1024);
+      heap.reset(heap.totalSize);
       dom.inputPid.value = 'P1';
-      triggerDynamicIsland('Heap reset (1024 KB)', '↺', '#007AFF');
       renderUI();
     });
 
-    /* Device Viewport Toggle (iPhone vs Studio Expanded) */
-    let isPhoneView = true;
-    dom.btnDeviceToggle.addEventListener('click', () => {
-      haptics.playTap();
-      isPhoneView = !isPhoneView;
-      if (isPhoneView) {
-        dom.appViewport.classList.remove('expanded');
-        dom.btnDeviceToggle.querySelector('span').textContent = 'iPhone View';
-        dom.btnDeviceToggle.classList.add('active');
-      } else {
-        dom.appViewport.classList.add('expanded');
-        dom.btnDeviceToggle.querySelector('span').textContent = 'Expanded Studio';
-        dom.btnDeviceToggle.classList.remove('active');
-      }
-    });
-
-    /* Theme Toggle (Light / Dark) */
+    /* Theme Toggle */
     let isDark = false;
     dom.btnThemeToggle.addEventListener('click', () => {
       haptics.playTap();
       isDark = !isDark;
       if (isDark) {
         document.documentElement.setAttribute('data-theme', 'dark');
-        dom.themeLabel.textContent = 'Light';
+        dom.themeBtnText.textContent = 'Light Mode';
       } else {
         document.documentElement.removeAttribute('data-theme');
-        dom.themeLabel.textContent = 'Dark';
+        dom.themeBtnText.textContent = 'Dark Mode';
       }
     });
 
-    /* Haptics Sound Toggle */
+    /* Haptic Audio Toggle */
     dom.btnSoundToggle.addEventListener('click', () => {
       haptics.enabled = !haptics.enabled;
-      dom.soundLabel.textContent = haptics.enabled ? 'Haptic ON' : 'Haptic OFF';
+      dom.soundBtnText.textContent = haptics.enabled ? 'Haptic: Bật' : 'Haptic: Tắt';
       if (haptics.enabled) haptics.playSuccess();
     });
 
     /* ==========================================================
-       4. AUTOMATION & SIMULATION SCENARIOS
+       5. AUTOMATED SCENARIO SIMULATION
        ========================================================== */
     let scenarioQueue = [];
     let scenarioTimer = null;
@@ -1751,32 +1748,30 @@
 
       if (type === 'random') {
         for (let i = 1; i <= 30; i++) {
-          if (Math.random() < 0.65 || i < 5) {
-            scenarioQueue.push({ type: 'alloc', pid: `P${i}`, size: Math.floor(Math.random() * 200) + 32 });
+          if (Math.random() < 0.65 || i < 6) {
+            scenarioQueue.push({ type: 'alloc', pid: `P${i}`, size: Math.floor(Math.random() * 180) + 32 });
           } else {
             const victim = Math.floor(Math.random() * (i - 1)) + 1;
             scenarioQueue.push({ type: 'free', pid: `P${victim}` });
           }
         }
-        triggerDynamicIsland('Loaded Random Mix Scenario', '🎲', '#5856D6');
+        dom.simStatusBadge.textContent = 'Đã nạp Random Mix (30 bước)';
+        dom.simStatusBadge.style.color = 'var(--apple-blue)';
       } else if (type === 'worst') {
-        // Alternating allocations then free every other block to cause maximum external fragmentation
         for (let i = 1; i <= 8; i++) {
           scenarioQueue.push({ type: 'alloc', pid: `W${i}`, size: 120 });
         }
-        // Free even blocks
         scenarioQueue.push({ type: 'free', pid: 'W2' });
         scenarioQueue.push({ type: 'free', pid: 'W4' });
         scenarioQueue.push({ type: 'free', pid: 'W6' });
         scenarioQueue.push({ type: 'free', pid: 'W8' });
-        // Try allocating a block that needs coalesced space
         scenarioQueue.push({ type: 'alloc', pid: 'W_Big', size: 240 });
-        triggerDynamicIsland('Loaded Worst-Case Fragmentation', '⚡', '#FF9500');
+        dom.simStatusBadge.textContent = 'Đã nạp Worst-Case Frag';
+        dom.simStatusBadge.style.color = 'var(--apple-orange)';
       } else if (type === 'web') {
-        // High frequency small allocations (request handlers), occasional large cache allocations
         for (let i = 1; i <= 25; i++) {
           if (i % 4 === 0) {
-            scenarioQueue.push({ type: 'alloc', pid: `Cache_${i}`, size: 220 });
+            scenarioQueue.push({ type: 'alloc', pid: `Cache_${i}`, size: 200 });
           } else {
             scenarioQueue.push({ type: 'alloc', pid: `Req_${i}`, size: 48 });
           }
@@ -1784,22 +1779,21 @@
             scenarioQueue.push({ type: 'free', pid: `Req_${i - 2}` });
           }
         }
-        triggerDynamicIsland('Loaded Web Server Simulation', '🌐', '#007AFF');
+        dom.simStatusBadge.textContent = 'Đã nạp Web Server Simulation';
+        dom.simStatusBadge.style.color = 'var(--apple-teal)';
       }
-
-      document.getElementById('sim-status-label').textContent = `${scenarioQueue.length} steps queued`;
       renderUI();
     };
 
     window.stepScenario = function() {
       if (scenarioQueue.length === 0) {
         pauseAutoPlay();
-        document.getElementById('sim-status-label').textContent = 'Completed';
-        triggerDynamicIsland('Scenario finished', '✓', '#34C759');
+        dom.simStatusBadge.textContent = 'Hoàn tất kịch bản';
+        dom.simStatusBadge.style.color = 'var(--apple-green)';
         return;
       }
       const op = scenarioQueue.shift();
-      document.getElementById('sim-status-label').textContent = `${scenarioQueue.length} remaining`;
+      dom.simStatusBadge.textContent = `Còn ${scenarioQueue.length} bước...`;
       if (op.type === 'alloc') {
         heap.allocate(op.pid, op.size);
       } else if (op.type === 'free') {
@@ -1821,7 +1815,7 @@
         window.loadScenario('random');
       }
       isPlaying = true;
-      document.getElementById('play-btn-text').textContent = '❚❚ Pause';
+      document.getElementById('play-btn-label').textContent = '❚❚ Tạm dừng';
       const speed = parseInt(document.getElementById('speed-slider').value, 10);
       scenarioTimer = setInterval(() => {
         if (scenarioQueue.length > 0) {
@@ -1834,7 +1828,7 @@
 
     function pauseAutoPlay() {
       isPlaying = false;
-      document.getElementById('play-btn-text').textContent = '▶ Auto Play';
+      document.getElementById('play-btn-label').textContent = '▶ Tự động chạy';
       if (scenarioTimer) clearInterval(scenarioTimer);
     }
 
@@ -1873,7 +1867,6 @@
       a.download = `memory_snapshot_${heap.algorithm}.json`;
       a.click();
       URL.revokeObjectURL(url);
-      triggerDynamicIsland('Snapshot Exported', '↓', '#007AFF');
     };
 
     window.importStateJSON = function() {
@@ -1888,13 +1881,11 @@
         try {
           const data = JSON.parse(evt.target.result);
           if (data.blocks && Array.isArray(data.blocks)) {
-            // Restore from snapshot
             heap.totalSize = data.state ? data.state.total_size : (data.total_size || 1024);
             heap.blocks = data.blocks.map(b => new MemoryBlock(b.start, b.size, b.free, b.process || b.process_id));
             heap.algorithm = data.algorithm ? data.algorithm.toLowerCase().replace(' ', '-') : 'first-fit';
             renderUI();
             haptics.playSuccess();
-            triggerDynamicIsland('Snapshot Imported!', '✓', '#34C759');
           } else {
             alert('File JSON không đúng cấu trúc Memory Snapshot.');
           }
@@ -1904,14 +1895,6 @@
       };
       reader.readAsText(file);
     });
-
-    // Real-time Status Clock
-    setInterval(() => {
-      const now = new Date();
-      let hrs = now.getHours();
-      let mins = now.getMinutes();
-      dom.deviceWrapper.querySelector('#status-time').textContent = `${hrs}:${mins < 10 ? '0' + mins : mins}`;
-    }, 1000);
 
     // Initial render
     renderUI();
