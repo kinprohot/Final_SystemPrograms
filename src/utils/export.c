@@ -282,7 +282,7 @@ int export_snapshot_to_html(HeapManager* heap, const char* filename) {
     int total_attempts = heap->allocation_count + heap->failed_allocation_count;
     double success_rate = (total_attempts > 0) ? ((double)heap->allocation_count / total_attempts * 100) : 100.0;
 
-    fprintf(f, "<!DOCTYPE html>\n<html lang=\"vi\">\n<head>\n");
+    fprintf(f, "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n");
     fprintf(f, "  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
     fprintf(f, "  <title>MemoryOS Report - %s</title>\n", timestamp);
     fprintf(f, "  <style>\n");
